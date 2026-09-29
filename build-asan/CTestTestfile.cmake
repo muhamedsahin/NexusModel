@@ -1,0 +1,36 @@
+# CMake generated Testfile for 
+# Source directory: C:/Users/muham/Desktop/Nexus/lib/NexusModel
+# Build directory: C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan
+# 
+# This file includes the relevant testing commands required for 
+# testing this directory and lists subdirectories to be tested as well.
+if(CTEST_CONFIGURATION_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+  add_test([=[nexus_model_kernel_tests]=] "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/Debug/nexus_model_kernel_tests.exe")
+  set_tests_properties([=[nexus_model_kernel_tests]=] PROPERTIES  _BACKTRACE_TRIPLES "C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;120;add_test;C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+  add_test([=[nexus_model_kernel_tests]=] "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/Release/nexus_model_kernel_tests.exe")
+  set_tests_properties([=[nexus_model_kernel_tests]=] PROPERTIES  _BACKTRACE_TRIPLES "C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;120;add_test;C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
+  add_test([=[nexus_model_kernel_tests]=] "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/MinSizeRel/nexus_model_kernel_tests.exe")
+  set_tests_properties([=[nexus_model_kernel_tests]=] PROPERTIES  _BACKTRACE_TRIPLES "C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;120;add_test;C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
+  add_test([=[nexus_model_kernel_tests]=] "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/RelWithDebInfo/nexus_model_kernel_tests.exe")
+  set_tests_properties([=[nexus_model_kernel_tests]=] PROPERTIES  _BACKTRACE_TRIPLES "C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;120;add_test;C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;0;")
+else()
+  add_test([=[nexus_model_kernel_tests]=] NOT_AVAILABLE)
+endif()
+if(CTEST_CONFIGURATION_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+  add_test([=[nexus_model_tests]=] "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/Debug/nexus_model_tests.exe")
+  set_tests_properties([=[nexus_model_tests]=] PROPERTIES  _BACKTRACE_TRIPLES "C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;124;add_test;C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+  add_test([=[nexus_model_tests]=] "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/Release/nexus_model_tests.exe")
+  set_tests_properties([=[nexus_model_tests]=] PROPERTIES  _BACKTRACE_TRIPLES "C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;124;add_test;C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
+  add_test([=[nexus_model_tests]=] "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/MinSizeRel/nexus_model_tests.exe")
+  set_tests_properties([=[nexus_model_tests]=] PROPERTIES  _BACKTRACE_TRIPLES "C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;124;add_test;C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;0;")
+elseif(CTEST_CONFIGURATION_TYPE MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
+  add_test([=[nexus_model_tests]=] "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/RelWithDebInfo/nexus_model_tests.exe")
+  set_tests_properties([=[nexus_model_tests]=] PROPERTIES  _BACKTRACE_TRIPLES "C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;124;add_test;C:/Users/muham/Desktop/Nexus/lib/NexusModel/CMakeLists.txt;0;")
+else()
+  add_test([=[nexus_model_tests]=] NOT_AVAILABLE)
+endif()

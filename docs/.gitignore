@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+test-results/
+playwright-report/
+preview*.log
+
+shots/
+.example-build/
+
+.bench-venv/
+benchmark-data/
+__pycache__/

@@ -1,0 +1,17 @@
+CPU kernel organization
+=======================
+scalar_kernels.cpp : portable numerical reference and scalar fallback.
+convolution.cpp    : im2col/col2im geometry; blocked GEMM forward/backward.
+normalization.cpp  : batch/group normalization and their backward reductions.
+pooling.cpp        : max/average pooling geometry and gradients.
+embedding.cpp      : table lookup and repeated-index gradient accumulation.
+dropout.cpp        : deterministic mask generation.
+
+Public declarations remain in include/nexus_model/core/kernels.hpp.
+Layer classes manage shapes, saved activations and reusable tensors. Kernels
+operate on caller-owned contiguous float32 memory. Output aliasing is only
+supported where explicitly documented by an operation, not for matrix products.
+
+Convolution computes W * im2col(X)^T directly into NCHW output, avoiding an
+additional output transpose. Backward uses the same matrix derivative kernels;
+parameter gradients accumulate, as do caller-provided input gradients.

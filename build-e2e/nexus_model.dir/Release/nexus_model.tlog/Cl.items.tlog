@@ -1,0 +1,5 @@
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\core\scalar_kernels.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-e2e\nexus_model.dir\Release\scalar_kernels.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\core\kernels_nn.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-e2e\nexus_model.dir\Release\kernels_nn.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\simd\simd_dispatch.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-e2e\nexus_model.dir\Release\simd_dispatch.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\simd\avx2_kernels.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-e2e\nexus_model.dir\Release\avx2_kernels.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\simd\avx512_kernels.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-e2e\nexus_model.dir\Release\avx512_kernels.obj

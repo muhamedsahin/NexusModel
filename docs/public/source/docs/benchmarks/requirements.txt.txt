@@ -1,0 +1,5 @@
+# Versions used for the recorded local comparison.
+numpy==2.3.5
+threadpoolctl==3.7.0
+# Install separately from the official CPU index:
+# python -m pip install torch==2.14.0+cpu --index-url https://download.pytorch.org/whl/cpu

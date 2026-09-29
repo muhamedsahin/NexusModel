@@ -1,0 +1,10 @@
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\core\scalar_kernels.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\scalar_kernels.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\core\convolution.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\convolution.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\core\normalization.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\src\core\normalization.cpp.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\core\pooling.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\pooling.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\core\embedding.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\embedding.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\core\dropout.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\dropout.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\simd\simd_dispatch.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\simd_dispatch.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\simd\avx2_kernels.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\avx2_kernels.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\simd\avx2\linear.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\linear.obj
+C:\Users\muham\Desktop\Nexus\lib\NexusModel\src\simd\avx2\normalization.cpp;C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\nexus_model.dir\RelWithDebInfo\src\simd\avx2\normalization.cpp.obj

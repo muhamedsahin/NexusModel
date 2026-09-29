@@ -1,0 +1,10 @@
+=== AMAÇ ===
+MatrixFlash'in vermediği füzyonlu cihaz çekirdekleri. Host Tensor bunları
+kendiliğinden çağırmaz. NEXUS_MODEL_WITH_CUDA=ON iken derlenir.
+
+=== İÇERİK ===
+- fused_softmax.cuh: son boyutta max, exp, toplam, bölme.
+- fused_layernorm.cuh: ortalama, varyans, normalize, scale, shift.
+- activation_kernels.cuh: ReLU ve tanh-yaklaşık GELU.
+
+GPU matmul burada yoktur. O, MatrixFlash cuBLAS yolundadır.

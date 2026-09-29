@@ -1,0 +1,8 @@
+op,shape,ms
+linear_784_256,B64,2.18014
+linear_256_scalar,B32,5.30394
+linear_256_simd,B32,0.40047
+relu_1M_scalar,,0.65276
+relu_1M_simd,,0.62537
+conv2d_16_32_k3,B8_28,34.5223
+mha_64_h4,B4_T32,0.68537

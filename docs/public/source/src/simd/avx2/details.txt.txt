@@ -1,0 +1,31 @@
+AVX2 matrix and reduction engine
+===============================
+gemm.hpp          : 6-row x 16-column register microkernel (12 FMA accumulators).
+linear.cpp        : bounded 128-depth packing, small-batch dot fallback,
+                    transpose-stride backward products, optional gradients.
+normalization.cpp : two-pass FP64 vector reductions, FP32 affine output.
+../avx2_kernels.cpp : elementwise functions, four-chain dot and vector softmax max.
+../simd_dispatch.cpp : immutable scalar/automatic tables and atomic selection.
+
+Forward input X is [rows,in], weights W are [out,in], output Y is [rows,out].
+For batches >=4 with both feature dimensions >=16, pack 16 weight rows into
+an 8 KiB stack panel. Reuse the panel across all input rows. Bias is applied
+only on the first depth panel; subsequent panels accumulate into output.
+Weights are repacked inside every call, so public in-place weight updates do
+not require invalidation and packing cost is included in every benchmark.
+
+Backward computes dX += dY W and dW += dY^T X with the same microkernel.
+Strides express the transpose without allocating or materializing a matrix.
+Missing gradients skip their product entirely. Scalar tails never read beyond
+the supplied matrix. No heap allocations, worker threads or global workspace.
+
+The 128-depth block was retained after trying 256: the larger candidate did
+not consistently improve backward. Block sizes are machine-sensitive; results
+are in benchmarks/results/tuning-block*.csv, not a universal tuning claim.
+
+LayerNorm intentionally retains two-pass double-precision variance. Replacing
+it with E[x*x]-E[x]^2 in float would lose accuracy on large-offset inputs.
+Global fast-math and -march=native are not enabled. Only ISA-specific source
+files get AVX flags; runtime dispatch checks OS state, AVX2 and FMA support.
+AVX-512 builds use the blocked AVX2 matrix engine for Linear; AVX-512 remains
+available for dot/ReLU. This machine does not exercise AVX-512 instructions.

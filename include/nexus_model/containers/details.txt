@@ -1,0 +1,9 @@
+=== AMAÇ ===
+Modülleri bir araya getiren kaplar. Kayıp veya optimizer içermez.
+
+=== İÇERİK ===
+- sequential.hpp: forward sırayla, backward ters sırada. Ara aktivasyonu
+  her katman kendi tamponunda tutar; Sequential ikinci bir kopya saklamaz.
+- module_list.hpp: indeksli çocuk listesi. parameters() çocukları toplar.
+  forward tanımsızdır; çağrı ModelError fırlatır.
+- module_dict.hpp: isimli çocuklar (çoklu görev başlıkları). Aynı kural.

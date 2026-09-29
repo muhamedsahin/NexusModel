@@ -1,0 +1,13 @@
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/nexus_model.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/Experimental.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/Nightly.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/Continuous.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/NightlyMemoryCheck.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/nexus_model_kernel_tests.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/nexus_model_tests.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/nexus_model_bench_kernels.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/nexus_model_bench.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/RUN_TESTS.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/INSTALL.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/CMakeFiles/ZERO_CHECK.dir

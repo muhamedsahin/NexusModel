@@ -1,0 +1,10 @@
+^C:\USERS\MUHAM\DESKTOP\NEXUS\LIB\NEXUSMODEL\BUILD-ASAN\CMAKEFILES\751ED44D8F18F5991B17E49970E8CD2F\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/muham/Desktop/Nexus/lib/NexusModel -BC:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-asan/NexusModel.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

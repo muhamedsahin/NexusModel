@@ -1,0 +1,35 @@
+Start testing: Sep 29 22:12 Türkiye Standart Saati
+----------------------------------------------------------
+1/2 Testing: nexus_model_kernel_tests
+1/2 Test: nexus_model_kernel_tests
+Command: "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/Release/nexus_model_kernel_tests.exe"
+Directory: C:/Users/muham/Desktop/Nexus/lib/NexusModel/build
+"nexus_model_kernel_tests" start time: Sep 29 22:12 Türkiye Standart Saati
+Output:
+----------------------------------------------------------
+kernel tails, guards, optional gradients, accumulation, grouped conv and stable reductions passed
+<end of output>
+Test time =   0.29 sec
+----------------------------------------------------------
+Test Passed.
+"nexus_model_kernel_tests" end time: Sep 29 22:12 Türkiye Standart Saati
+"nexus_model_kernel_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: nexus_model_tests
+2/2 Test: nexus_model_tests
+Command: "C:/Users/muham/Desktop/Nexus/lib/NexusModel/build/Release/nexus_model_tests.exe"
+Directory: C:/Users/muham/Desktop/Nexus/lib/NexusModel/build
+"nexus_model_tests" start time: Sep 29 22:12 Türkiye Standart Saati
+Output:
+----------------------------------------------------------
+all nexus_model checks passed
+<end of output>
+Test time =   0.20 sec
+----------------------------------------------------------
+Test Passed.
+"nexus_model_tests" end time: Sep 29 22:12 Türkiye Standart Saati
+"nexus_model_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 29 22:12 Türkiye Standart Saati

@@ -1,0 +1,44 @@
+[
+  {
+    "op": "Linear",
+    "shape": "64 × 784 → 256",
+    "ms": 2.18014,
+    "pass": "forward + backward"
+  },
+  {
+    "op": "Linear · scalar",
+    "shape": "32 × 256 → 256",
+    "ms": 5.30394,
+    "pass": "forward + backward"
+  },
+  {
+    "op": "Linear · SIMD",
+    "shape": "32 × 256 → 256",
+    "ms": 0.40047,
+    "pass": "forward + backward"
+  },
+  {
+    "op": "ReLU · scalar",
+    "shape": "1 × 2²⁰",
+    "ms": 0.65276,
+    "pass": "forward"
+  },
+  {
+    "op": "ReLU · SIMD",
+    "shape": "1 × 2²⁰",
+    "ms": 0.62537,
+    "pass": "forward"
+  },
+  {
+    "op": "Conv2D",
+    "shape": "8 × 16 × 28 × 28 · K32 · k3",
+    "ms": 34.5223,
+    "pass": "forward + backward"
+  },
+  {
+    "op": "MultiHeadAttention",
+    "shape": "4 × 32 × 64 · H4",
+    "ms": 0.68537,
+    "pass": "forward + backward"
+  }
+]

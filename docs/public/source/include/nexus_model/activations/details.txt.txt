@@ -1,0 +1,11 @@
+=== AMAÇ ===
+Eleman-bazlı aktivasyonlar. İleri ve geri aynı tampon ailesini kullanır.
+ReLU, LeakyReLU, GELU (tanh yaklaşımı), Sigmoid, Tanh, SiLU ve Softmax
+AVX2 tablosuna bağlıdır. Tam GELU (erf) skalar kalır.
+
+=== İÇERİK ===
+activations.hpp: ReLU, LeakyReLU, PReLU, ELU, GELU, Sigmoid, Tanh, SiLU, Mish,
+Softmax, LogSoftmax.
+
+Softmax son boyutta, max çıkararak. Türevi Jacobian: dx = y * (dy - <y, dy>).
+ReLU türevi x > 0 iken 1, aksi halde 0 (x = 0 için alttürev 0).

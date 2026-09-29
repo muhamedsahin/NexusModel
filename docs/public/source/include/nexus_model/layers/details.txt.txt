@@ -1,0 +1,27 @@
+=== AMAÇ ===
+Katmanlar: parametre, önbellek ve analitik (veya teyp) geri yayılım.
+Loss, veri ve ağırlık güncellemesi burada yoktur.
+
+=== İÇERİK ===
+- linear.hpp: Y = X W^T + b. dX, dW, db birikir. W düzeni [out, in].
+- conv.hpp: Conv1D/2D/3D ve DepthwiseConv2D. im2col + aynı GEMM. Çapraz korelasyon,
+  stride/pad/dilation/groups. Ağırlık [K, C/groups, çekirdek...].
+- pooling.hpp: MaxPool (ilk maksimum kazanır), AvgPool, GlobalAvgPool.
+- normalization.hpp: BatchNorm (eğitimde /m, running_var için /(m-1)), LayerNorm
+  (son boyut), GroupNorm, InstanceNorm (= GroupNorm, groups = C).
+  BatchNorm geri yayılımı: Ioffe & Szegedy, 2015.
+- dropout.hpp: ters dropout. Eval'de birim. Maske forward'da önbelleğe alınır.
+- embedding.hpp: gather. Geri yayılım yalnızca dokunulan satırlara scatter-add.
+  padding_idx gradyan almaz. Başlangıç normal(0, 1).
+- recurrent.hpp: batch-first [B, T, F]. RNN tanh, LSTM (i,f,g,o; forget bias 1),
+  GRU. BPTT. truncate_bptt > 0 pencerenin öncesini keser.
+- attention.hpp: Scaled dot-product, MultiHeadAttention, sinus pozisyon,
+  post-norm TransformerEncoderLayer, masked self + cross + FFN decoder.
+  Softmax∘matmul MicroTape ile. Vaswani et al., 2017.
+  Self-attention dq+dk+dv döner. Cross-attention dq döner; dk/dv
+  grad_key_input / grad_value_input içindedir.
+- flatten_reshape.hpp, residual.hpp: y = F(x) + x, dx = dF + dy.
+
+=== VARSAYILAN BAŞLATMA ===
+Linear ve Conv: Kaiming uniform. Embedding: normal(0, 1). RNN recurrent
+ağırlıkları orthogonal. LSTM forget bias bloğu 1.

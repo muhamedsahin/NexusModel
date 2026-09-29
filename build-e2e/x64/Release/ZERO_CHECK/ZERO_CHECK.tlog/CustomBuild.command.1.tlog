@@ -1,0 +1,10 @@
+^C:\USERS\MUHAM\DESKTOP\NEXUS\LIB\NEXUSMODEL\BUILD-E2E\CMAKEFILES\5D89570D8B4222FF2C87436C0F11DA87\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/muham/Desktop/Nexus/lib/NexusModel -BC:/Users/muham/Desktop/Nexus/lib/NexusModel/build-e2e --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-e2e/NexusModel.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

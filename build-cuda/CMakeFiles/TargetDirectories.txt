@@ -1,0 +1,11 @@
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/nexus_model.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/Experimental.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/Nightly.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/Continuous.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/NightlyMemoryCheck.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/nexus_model_bench.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/nexus_model_bench_gpu.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/RUN_TESTS.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/INSTALL.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/ALL_BUILD.dir
+C:/Users/muham/Desktop/Nexus/lib/NexusModel/build-cuda/CMakeFiles/ZERO_CHECK.dir

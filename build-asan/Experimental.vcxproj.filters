@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\CMakeFiles\751ed44d8f18f5991b17e49970e8cd2f\Experimental.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\muham\Desktop\Nexus\lib\NexusModel\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-asan\CMakeFiles\Experimental" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{71E9B953-54C6-31C1-80C7-DC4DDC40C81F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

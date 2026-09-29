@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>NexusModel Kullanım Kılavuzu</title>
+<style>
+  @page {
+    size: A4;
+    margin: 16mm 15mm 18mm 15mm;
+    @bottom-left {
+      content: "NexusModel  ·  Kullanım Kılavuzu";
+      font-family: "Segoe UI", sans-serif;
+      font-size: 8.5pt;
+      color: #6b7c8d;
+    }
+    @bottom-right {
+      content: counter(page);
+      font-family: "Segoe UI", sans-serif;
+      font-size: 8.5pt;
+      color: #6b7c8d;
+    }
+  }
+  @page :first { margin: 0; @bottom-left { content: none; } @bottom-right { content: none; } }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Calibri", sans-serif;
+    font-size: 10.6pt;
+    line-height: 1.48;
+    color: #1c2833;
+    background: white;
+  }
+  h1 {
+    font-size: 18.5pt;
+    line-height: 1.2;
+    margin: 0 0 8px;
+    color: #0e2744;
+    page-break-before: always;
+    letter-spacing: -0.2px;
+  }
+  h1 .num { color: #1f6f8b; font-weight: 700; margin-right: 8px; }
+  h2 { font-size: 13.2pt; color: #16324f; margin: 16px 0 6px; page-break-after: avoid; }
+  h3 { font-size: 11.4pt; color: #1f4e6b; margin: 12px 0 4px; page-break-after: avoid; }
+  p { margin: 0 0 8px; }
+  ul, ol { margin: 4px 0 10px; padding-left: 18px; }
+  li { margin: 0 0 3px; }
+  a { color: #1f6f8b; text-decoration: none; }
+  code, pre {
+    font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+    font-size: 8.7pt;
+  }
+  code {
+    background: #eef4f7;
+    color: #0e3a4d;
+    padding: 0 3px;
+    border-radius: 3px;
+  }
+  pre {
+    background: #0f1c2e;
+    color: #e7eef6;
+    padding: 10px 12px;
+    border-radius: 8px;
+    line-height: 1.38;
+    white-space: pre-wrap;
+    page-break-inside: avoid;
+    margin: 6px 0 12px;
+  }
+  pre .c { color: #8aa0b8; }
+  pre .k { color: #7ec8e3; }
+  pre .s { color: #f0c674; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 12px;
+    page-break-inside: avoid;
+    font-size: 9.4pt;
+  }
+  th {
+    text-align: left;
+    background: #0e2744;
+    color: white;
+    padding: 5px 7px;
+    font-weight: 600;
+  }
+  td { padding: 4px 7px; border-bottom: 1px solid #d5e0e8; vertical-align: top; }
+  tr:nth-child(even) td { background: #f4f8fb; }
+  .note, .warn, .ok {
+    border-radius: 8px;
+    padding: 8px 11px;
+    margin: 8px 0 12px;
+    page-break-inside: avoid;
+  }
+  .note { background: #e8f4f8; border-left: 4px solid #1f6f8b; }
+  .warn { background: #fff4e8; border-left: 4px solid #c56a12; }
+  .ok { background: #e9f7ef; border-left: 4px solid #1e7a46; }
+  .note strong, .warn strong, .ok strong { display: block; margin-bottom: 2px; }
+  .formula {
+    background: #f7f4ee;
+    border: 1px solid #e4dccb;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: "Cambria Math", Cambria, serif;
+    font-size: 11.5pt;
+    margin: 6px 0 10px;
+    page-break-inside: avoid;
+  }
+  .cover {
+    height: 297mm;
+    background: #071422;
+    color: #f4f7fb;
+    padding: 28mm 20mm 18mm;
+    page-break-after: always;
+    position: relative;
+  }
+  .cover .eyebrow {
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    font-size: 9.5pt;
+    color: #7ec8e3;
+    margin-bottom: 18px;
+  }
+  .cover h1 {
+    page-break-before: auto;
+    color: white;
+    font-size: 40pt;
+    line-height: 1.02;
+    margin: 0 0 12px;
+    font-weight: 700;
+  }
+  .cover .sub { font-size: 14pt; color: #c5d4e4; max-width: 150mm; line-height: 1.4; }
+  .cover .bar { width: 42mm; height: 4px; background: #1f6f8b; margin: 22px 0; }
+  .meta { margin-top: 28px; font-size: 11pt; color: #d5e2ee; }
+  .meta div { margin: 3px 0; }
+  .toc { page-break-after: always; }
+  .toc h1 { page-break-before: auto; }
+  .toc ol { list-style: none; padding: 0; margin: 8px 0 0; }
+  .toc li { border-bottom: 1px dotted #c5d2dc; padding: 4px 0; }
+  .toc .sec { color: #1f6f8b; font-weight: 700; display: inline-block; width: 34px; }
+  .small { font-size: 9.2pt; color: #3d4f60; }
+  .sig { font-family: Consolas, monospace; font-size: 8.6pt; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="eyebrow">Nexus yığını · lib / NexusModel</div>
+  <h1>NexusModel<br>Kullanım Kılavuzu</h1>
+  <div class="sub">Katmanlar, ileri geçiş, geri yayılım, serileştirme ve ekosistemle eğitim. API’ler, dosya haritası, formüller ve çalışan örnekler.</div>
+  <div class="bar"></div>
+  <div class="meta">
+    <div>Sürüm 1.0 · C++20 · host float32</div>
+    <div>MatrixFlash Pro · NexusData · NexusLoss · NexusOptim</div>
+    <div>Autograd kararı: Yol B — analitik backward + katman-lokal MicroTape</div>
+  </div>
+</section>
+
+<section class="toc">
+  <h1 style="page-break-before:auto"><span class="num">00</span>İçindekiler</h1>
+  <ol>
+    <li><span class="sec">01</span>NexusModel nedir</li>
+    <li><span class="sec">02</span>Ekosistem ve bir eğitim adımı</li>
+    <li><span class="sec">03</span>Autograd kararı</li>
+    <li><span class="sec">04</span>Kurulum ve CMake</li>
+    <li><span class="sec">05</span>Beş dakikada ilk model</li>
+    <li><span class="sec">06</span>Eğitim sözleşmesi</li>
+    <li><span class="sec">07</span>Tensor</li>
+    <li><span class="sec">08</span>Parameter ve başlatma</li>
+    <li><span class="sec">09</span>Module</li>
+    <li><span class="sec">10</span>Serileştirme</li>
+    <li><span class="sec">11</span>Konteynerler</li>
+    <li><span class="sec">12</span>Linear</li>
+    <li><span class="sec">13</span>Aktivasyonlar</li>
+    <li><span class="sec">14</span>Dropout</li>
+    <li><span class="sec">15</span>Konvolüsyon</li>
+    <li><span class="sec">16</span>Pooling</li>
+    <li><span class="sec">17</span>Normalizasyon</li>
+    <li><span class="sec">18</span>Embedding</li>
+    <li><span class="sec">19</span>RNN, LSTM, GRU</li>
+    <li><span class="sec">20</span>Attention ve Transformer</li>
+    <li><span class="sec">21</span>Flatten, Reshape, Residual</li>
+    <li><span class="sec">22</span>MicroTape</li>
+    <li><span class="sec">23</span>SIMD, CUDA, MatrixFlash</li>
+    <li><span class="sec">24</span>Uçtan uca eğitim</li>
+    <li><span class="sec">25</span>Performans</li>
+    <li><span class="sec">26</span>Testler ve ölçüm</li>
+    <li><span class="sec">27</span>Dosya haritası</li>
+    <li><span class="sec">28</span>Sınırlar ve hata mesajları</li>
+  </ol>
+</section>
+
+<h1><span class="num">01</span>NexusModel nedir</h1>
+<p>NexusModel, bir sinir ağı <em>mimarisi</em> kütüphanesidir. Katmanı tanımlar, katmanları birbirine bağlar, ileri geçişi çalıştırır ve kayıptan gelen gradyanı katman katman geri yayar. Öğrenilen ağırlıkların gradyanını <code>Parameter::grad</code> içinde biriktirir. Ağırlığı kendisi güncellemez.</p>
+<p>Tek genel başlık:</p>
+<pre>#include "nexus_model/nexus_model.hpp"
+using namespace nexus_model;</pre>
+<p>Ad alanı <code>nexus_model</code>’dir. Tensör tipi <code>nexus_model::Tensor</code>’dır. Bu, MatrixFlash’in <code>matrix_pro::Tensor</code> tipi değildir. İkisi de satır-major float32 taşır; NexusModel’in tensörü eğitim sıcak yolu için 64 bayt hizalı host belleğidir.</p>
+
+<h2>Ne yapar</h2>
+<ul>
+  <li>Katman: Linear, Conv1D/2D/3D, DepthwiseConv2D, pooling, BatchNorm, LayerNorm, GroupNorm, InstanceNorm, Dropout, Embedding, RNN, LSTM, GRU, MultiHeadAttention, Transformer encoder/decoder, pozisyon kodlama, Flatten, Reshape, Residual.</li>
+  <li>Kap: Sequential, ModuleList, ModuleDict.</li>
+  <li>Parametre listesi, <code>train()</code> / <code>eval()</code>, <code>state_dict</code> / <code>load_state_dict</code>.</li>
+  <li>Kaiming, Xavier, orthogonal ve temel başlatıcılar.</li>
+</ul>
+
+<h2>Ne yapmaz</h2>
+<ul>
+  <li>Kayıp hesabı. Bu NexusLoss’un işidir. Çapraz entropi burada yoktur.</li>
+  <li>Ağırlık adımı. SGD ve AdamW NexusOptim’dedir.</li>
+  <li>Veri yükleme, karıştırma, bölme. Bunlar NexusData’dadır.</li>
+  <li>Genel matris cebri ve cuBLAS. CPU GEMM bu kütüphanededir çünkü MatrixFlash <code>multiply</code> yalnızca CUDA’dır. GPU çarpımı istenirse MatrixFlash’e bırakılır.</li>
+  <li>Epoch döngüsü, log ve checkpoint zamanlaması. Örnek eğitim döngüsü vardır; kalıcı orkestrasyon NexusTrain’e aittir.</li>
+</ul>
+
+<div class="note"><strong>Altın kural</strong>
+NexusModel hangi hesabın hangi sırayla yapılacağını ve gradyanın nasıl akacağını bilir. Toplama, çarpma ve aktivasyonun makine kodu <code>kernels</code> tablosundadır. Kayıp gradyanının üretilmesi çağıranın işidir.</div>
+
+<h1><span class="num">02</span>Ekosistem ve bir eğitim adımı</h1>
+<p>Dört kütüphane aynı teybi paylaşmaz. Veri <code>nexusdata::NDArray</code>, kayıp <code>std::span</code> / <code>std::vector</code>, optimizer ödünç <code>float*</code>, model ise <code>nexus_model::Tensor</code> kullanır. Eğitim adımı bu dört tipi elle birleştirir.</p>
+<table>
+  <tr><th>Kütüphane</th><th>Klasör</th><th>Sorumluluk</th></tr>
+  <tr><td>MatrixFlash Pro</td><td>matrixflash-pro</td><td>Cihaz tensörü, CUDA GEMM, sınırlı autograd</td></tr>
+  <tr><td>NexusData</td><td>NexusData</td><td>Dataset, DataLoader, NDArray batch</td></tr>
+  <tr><td>NexusModel</td><td>NexusModel</td><td>Katman, forward, backward, parametre gradyanı</td></tr>
+  <tr><td>NexusLoss</td><td>NexusLoss</td><td>Kayıp ve dL/d(tahmin)</td></tr>
+  <tr><td>NexusOptim</td><td>NexusOptim</td><td>Parametre güncellemesi</td></tr>
+</table>
+<p>Bir adımın sırası sabittir:</p>
+<ol>
+  <li><code>optimizer.zero_grad()</code> veya <code>model.zero_grad()</code> — parametre gradyanını sıfırla. Backward biriktirir, sıfırlamaz.</li>
+  <li>Batch’i <code>Tensor</code>’a kopyala. <code>Batch.inputs</code> bir <code>NDArray</code>’dir.</li>
+  <li><code>prediction = model.forward(inputs)</code>.</li>
+  <li>NexusLoss ile satır satır kayıp ve <code>dL/dy</code> üret. Ortalama için batch boyutuna böl.</li>
+  <li><code>model.backward(grad)</code> — gradyan ilk katmana kadar iner, <code>Parameter::grad</code> dolar.</li>
+  <li><code>optimizer.step()</code> — NexusOptim aynı <code>float*</code> tamponlarına yazar.</li>
+</ol>
+<div class="warn"><strong>İşaretçiler sabit kalmalı</strong>
+<code>as_param_group</code> ağırlık ve gradyan işaretçilerini ödünç verir. Optimizer yaşarken <code>Parameter::data</code> ve <code>Parameter::grad</code> yeniden ayrılmamalıdır. <code>zero_grad</code> boyutu değişmediyse aynı tamponu sıfırlar.</div>
+
+<h1><span class="num">03</span>Autograd kararı</h1>
+<p>MatrixFlash Pro’da ters-mod autograd vardır: <code>matrix_pro::Variable</code> ve sınırlı <code>matrix_pro::VarTensor</code>. <code>Variable::backward()</code> kök gradyanı birlerle doldurur. NexusLoss’un ürettiği dış <code>dL/dy</code> vektörünü bu çağrıya veremezsiniz. NexusData ve NexusOptim de bu grafiğe bağlı değildir.</p>
+<p>Bu yüzden Yol A seçilmedi. Yol A’da katman yalnızca forward yazar, global teyp türev alırdı. NexusModel <strong>Yol B</strong> kullanır:</p>
+<ol>
+  <li><strong>Analitik backward.</strong> Linear, Conv, Pool, Norm, Dropout, Embedding, RNN, LSTM, GRU ve aktivasyonlar kendi türevini yazar. Parametre gradyanı doğrudan <code>Parameter::grad</code> içine <code>+=</code> ile birikir.</li>
+  <li><strong>MicroTape.</strong> Yalnızca attention içindeki softmax ∘ matmul zinciri küçük, katman-lokal bir teybe yazılır. Teyp o katmanın forward’ı kadar yaşar. Global bir autograd motoru değildir. LSTM ve GRU teybe yazılmaz; analitik BPTT kullanırlar.</li>
+</ol>
+<p>Ayrıntı dosyası: <code>include/nexus_model/core/details.txt</code>.</p>
+<div class="note"><strong>Neden analitik yol daha hızlı</strong>
+Sıcak katmanın türevi birkaç GEMM ve biriktirmedir. Genel teyp her ara tensörü saklar ve sanal çağrı yapar. Linear ve Conv için formül literatürde kapalıdır; hata, sonlu fark testiyle yakalanır.</div>
+
+<h1><span class="num">04</span>Kurulum ve CMake</h1>
+<p>Derleyici C++20 ister. Windows’ta denenen araç zinciri Visual Studio 2022 (MSVC 19.44), <code>/W4 /WX /O2</code>. GCC ve Clang tarafında uyarılar hata sayılır; Release’de <code>-O3; ISA bayrakları yalnız ilgili kaynak dosyalarında</code>.</p>
+<pre>cmake -S NexusModel -B NexusModel/build
+cmake --build NexusModel/build --config Release
+NexusModel\build\Release\nexus_model_tests.exe
+NexusModel\build\Release\nexus_model_bench.exe</pre>
+<p>Çekirdek hedef <code>nexus_model</code> statik kütüphanedir. Include dizini <code>NexusModel/include</code>. Başka bir CMake projesine:</p>
+<pre>add_subdirectory(path/to/NexusModel)
+target_link_libraries(uygulama PRIVATE nexus_model)</pre>
+
+<h2>Seçenekler</h2>
+<table>
+  <tr><th>Seçenek</th><th>Varsayılan</th><th>Anlamı</th></tr>
+  <tr><td>NEXUS_MODEL_BUILD_TESTS</td><td>ON</td><td><code>nexus_model_tests</code></td></tr>
+  <tr><td>NEXUS_MODEL_BUILD_BENCHMARKS</td><td>ON</td><td><code>nexus_model_bench</code></td></tr>
+  <tr><td>NEXUS_MODEL_BUILD_EXAMPLES</td><td>OFF</td><td>NexusData, NexusLoss, NexusOptim yalnızca örneğe bağlanır</td></tr>
+  <tr><td>NEXUS_MODEL_ENABLE_AVX512</td><td>ON</td><td>AVX-512 çeviri birimi. Çalışma zamanında CPU yoksa kullanılmaz</td></tr>
+  <tr><td>NEXUS_MODEL_WITH_CUDA</td><td>OFF</td><td>Fused softmax, LayerNorm, ReLU, GELU cihaz çekirdekleri</td></tr>
+  <tr><td>NEXUS_MODEL_WITH_MATRIXFLASH</td><td>OFF</td><td>İsteğe bağlı GPU GEMM köprü başlığı</td></tr>
+  <tr><td>NEXUS_MODEL_WARNINGS_AS_ERRORS</td><td>ON</td><td>Uyarı = hata</td></tr>
+</table>
+<pre>cmake -S NexusModel -B NexusModel/build-e2e -DNEXUS_MODEL_BUILD_EXAMPLES=ON
+cmake --build NexusModel/build-e2e --config Release --target train_end_to_end</pre>
+<p>Örnek hedefi <code>nexus_model</code>, <code>nexusloss</code>, <code>nexus_optim</code> ve <code>nexusdata</code> bağlar. Çekirdek <code>.lib</code> bu üçüne bağlı değildir. <code>as_param_group</code> başlığı da çekirdeğe dahil değildir; yalnızca örneği derleyen dosya onu include eder.</p>
+
+<h1><span class="num">05</span>Beş dakikada ilk model</h1>
+<p>Aşağıdaki program NexusData olmadan çalışır. Girdi elle doldurulur, kayıp burada yazılmaz; geri yayılımı görmek için çıkış gradyanı birlerle doldurulur. Bu, “her logit artsın” anlamına gelir ve gerçek eğitim değildir. Gerçek adım 24. bölümdedir.</p>
+<pre>#include "nexus_model/nexus_model.hpp"
+#include &lt;iostream&gt;
+
+int main() {
+  using namespace nexus_model;
+  Sequential net({
+    std::make_shared&lt;Linear&gt;(4, 8),
+    std::make_shared&lt;ReLU&gt;(),
+    std::make_shared&lt;Linear&gt;(8, 3)
+  });
+
+  Tensor x = Tensor::from_values({2, 4}, {
+    0.2f, -0.1f, 0.5f, 0.0f,
+    0.3f,  0.4f, -0.2f, 0.1f
+  });
+  Tensor y = net.forward(x);          <span class="c">// şekil [2, 3]</span>
+  Tensor gy = Tensor::full({2, 3}, 1.f);
+  net.zero_grad();
+  Tensor dx = net.backward(gy);       <span class="c">// şekil [2, 4]</span>
+
+  std::cout &lt;&lt; "cikis " &lt;&lt; y.numel()
+            &lt;&lt; " giris gradyani " &lt;&lt; dx.numel()
+            &lt;&lt; " parametre " &lt;&lt; net.parameters().size() &lt;&lt; "\n";
+}</pre>
+<p><code>parameters().size()</code> burada 4’tür: iki ağırlık ve iki bias. ReLU parametre taşımaz.</p>
+<div class="ok"><strong>Şekil sözleşmesi</strong>
+<code>Linear(in, out)</code> son boyutu <code>in</code> olan her tensörü kabul eder. <code>[2, 4]</code> girer, <code>[2, 3]</code> çıkar. <code>[8, 5, 4]</code> de geçerlidir; çıkış <code>[8, 5, 3]</code> olur. Satırlar GEMM’de düzleştirilir.</div>
+
+<h1><span class="num">06</span>Eğitim sözleşmesi</h1>
+<p>PyTorch’taki <code>loss.backward()</code> burada iki çağrıya bölünmüştür. NexusLoss skaler kaybın tahmine göre türevini üretir. NexusModel o vektörü ağa yayar.</p>
+<pre>model.zero_grad();
+Tensor y = model.forward(x);
+<span class="c">// grad, y ile aynı şekilde, dL/dy</span>
+model.backward(grad);
+optimizer.step();</pre>
+<table>
+  <tr><th>Çağrı</th><th>Kim sıfırlar</th><th>Ne birikir</th></tr>
+  <tr><td><code>forward</code></td><td>katman kendi çıkış tamponunu yeniden kullanır</td><td>ara değer (giriş kopyası, maske, running stat)</td></tr>
+  <tr><td><code>backward</code></td><td>giriş gradyanı her seferinde sıfırlanır</td><td><code>Parameter::grad</code> sıfırlanmaz, eklenir</td></tr>
+  <tr><td><code>zero_grad</code></td><td>çağıran, adım başında</td><td>tüm parametre gradyanları</td></tr>
+</table>
+<div class="warn"><strong>zero_grad atlanırsa</strong>
+İkinci adımın gradyanı birincinin üstüne biner. Model sessizce yanlış yönde öğrenir. Her adımın başında <code>model.zero_grad()</code> veya optimizer’ın <code>zero_grad()</code> çağrısı gerekir. İkisi aynı tamponu sıfırlar.</div>
+<p><code>train()</code> Dropout’u maskeli, BatchNorm’u batch istatistiğiyle çalıştırır. <code>eval()</code> Dropout’u birim yapar, BatchNorm running mean ve running var kullanır. Varsayılan mod eğitimdir. <code>eval()</code> çocuklara da iner.</p>
+<p>Dönen <code>Tensor</code> depolamayı paylaşan bir başlıktır. Veri kopyası değildir. Sonraki <code>forward</code>, önceki çıkışı hâlâ tutuyorsanız yeni tampon ayırır. Eğitim döngüsünde tahminı kayıp hesabı bitince bırakın.</p>
+
+<h1><span class="num">07</span>Tensor</h1>
+<p>Dosya: <code>include/nexus_model/core/tensor.hpp</code>. Rank en fazla 8’dir (<code>kMaxRank</code>). Boyutlar nesnenin içinde durur, şekil için <code>std::vector</code> zorunlu değildir. Veri <code>shared_ptr</code> ile paylaşılır. Windows’ta ayırma <code>_aligned_malloc</code>, hiza 64 bayttır.</p>
+<table>
+  <tr><th>API</th><th>Ne yapar</th></tr>
+  <tr><td class="sig">Tensor::zeros({n, m})</td><td>Sıfırlanmış sahip tensör</td></tr>
+  <tr><td class="sig">Tensor::full(shape, v)</td><td>Her eleman v</td></tr>
+  <tr><td class="sig">Tensor::from_values(shape, {…})</td><td>Eleman sayısı şekille uyuşmazsa ModelError</td></tr>
+  <tr><td class="sig">Tensor::borrow(ptr, shape)</td><td>Sahip değildir. İşaretçinin ömrü çağırandadır</td></tr>
+  <tr><td class="sig">rank(), numel(), size(axis), dims(), shape_vec()</td><td>Şekil sorgusu</td></tr>
+  <tr><td class="sig">data(), operator[]</td><td>Düz satır-major erişim</td></tr>
+  <tr><td class="sig">zero(), fill(v), copy_from, clone</td><td>clone yeni depolama ayırır</td></tr>
+  <tr><td class="sig">resize_dims(ptr, rank), resize_like</td><td>Tek sahip ve kapasite yetiyorsa ayırmaz</td></tr>
+  <tr><td class="sig">reshape({2, -1}), view_as</td><td>Aynı depolama, yeni şekil. Eleman sayısı aynı olmalı</td></tr>
+  <tr><td class="sig">allocation_count()</td><td>AlignedStorage kurucu sayacı. Sıcak yol testinde kullanılır</td></tr>
+</table>
+<pre>Tensor a = Tensor::from_values({2, 3}, {1, 2, 3, 4, 5, 6});
+Tensor row = a.reshape({2, 3});     <span class="c">// paylaşır</span>
+Tensor copy = a.clone();             <span class="c">// bağımsız</span>
+a[0] = 9.f;                          <span class="c">// row[0] da 9, copy[0] hâlâ 1</span></pre>
+<p>Düzen satır-majordur. <code>[N, C, H, W]</code> için <code>W</code> en hızlı değişen indekstir. <code>[B, T, F]</code> için zaman adımı bitişik değildir; RNN zaman dilimini paketlerken buna dikkat eder.</p>
+
+<h1><span class="num">08</span>Parameter ve başlatma</h1>
+<p>Dosya: <code>core/parameter.hpp</code>, <code>core/initializer.hpp</code>. Ad alanı <code>nexus_model::init</code>.</p>
+<pre>class Parameter {
+ public:
+  Tensor data;
+  Tensor grad;
+  bool requires_grad;
+  explicit Parameter(Tensor values, bool need_grad = true);
+  void zero_grad();
+  void accumulate_grad_locked(const Tensor&amp; extra);
+};</pre>
+<p>Kurucu <code>grad</code>’ı <code>data</code> ile aynı şekilde sıfırlar. <code>requires_grad == false</code> ise backward o tampona yazmaz. <code>accumulate_grad_locked</code> sıcak yolda değildir; veri paralel kopyaların gradyanını adım dışında birleştirmek içindir. Aynı modül nesnesinde eşzamanlı <code>forward</code> tanımsızdır, çünkü ara tamponlar paylaşılır.</p>
+<table>
+  <tr><th>İşlev</th><th>Kullanım</th></tr>
+  <tr><td class="sig">manual_seed(uint64)</td><td>İş parçacığı yerel mt19937. Varsayılan tohum 0xC0FFEE</td></tr>
+  <tr><td class="sig">zeros_ / ones_ / constant_(t, v)</td><td>Bias çoğu katmanda sıfır</td></tr>
+  <tr><td class="sig">uniform_(t, low, high)</td><td>Kapalı aralık</td></tr>
+  <tr><td class="sig">normal_(t, mean, std)</td><td>Embedding varsayılanı normal(0, 1)</td></tr>
+  <tr><td class="sig">kaiming_uniform_(t, slope=0, fan_out=false)</td><td>Linear ve Conv varsayılanı. He, 2015</td></tr>
+  <tr><td class="sig">kaiming_normal_</td><td>Aynı kazanç, normal dağılım</td></tr>
+  <tr><td class="sig">xavier_uniform_(t, gain=1)</td><td>Glorot. Sigmoid ve tanh katmanları</td></tr>
+  <tr><td class="sig">xavier_normal_</td><td>Aynı sınır, normal</td></tr>
+  <tr><td class="sig">orthogonal_(t, gain=1)</td><td>RNN tekrarlayan ağırlık. Saxe, 2014</td></tr>
+</table>
+<p>Kaiming uniform sınırı <span class="formula">bound = √3 · √(2 / (1+a²)) / √fan</span> fan_in varsayılandır. Conv’de fan, kanal çarpı alıcı alandır. Satır sayısı sütundan küçükse orthogonal, devriğini çarpanlara ayırır.</p>
+<pre>Linear layer(32, 16);
+init::xavier_uniform_(layer.weight()-&gt;data);  <span class="c">// varsayılan Kaiming'i ezer</span>
+init::zeros_(layer.bias()-&gt;data);</pre>
+
+<h1><span class="num">09</span>Module</h1>
+<p>Dosya: <code>core/module.hpp</code>. Bütün katmanlar bundan türer.</p>
+<table>
+  <tr><th>Üye</th><th>Sözleşme</th></tr>
+  <tr><td class="sig">forward(input) → Tensor</td><td>Çıkış. Depolama katmana aittir</td></tr>
+  <tr><td class="sig">backward(grad_output) → Tensor</td><td>Giriş gradyanı. Parametre gradyanı birikir</td></tr>
+  <tr><td class="sig">parameters()</td><td>Bu modül ve çocuklar. Yalnız requires_grad filtresi uygulamaz; filtre <code>as_param_group</code> içindedir</td></tr>
+  <tr><td class="sig">named_parameters(prefix)</td><td><code>"0.weight"</code>, <code>"attn.q_proj.bias"</code></td></tr>
+  <tr><td class="sig">zero_grad()</td><td>Ağaçtaki her parametre</td></tr>
+  <tr><td class="sig">train() / eval() / is_training()</td><td>Çocuklara yayılır</td></tr>
+  <tr><td class="sig">state_dict()</td><td>Parametre ve buffer klonu</td></tr>
+  <tr><td class="sig">load_state_dict(state, strict=true)</td><td>strict iken fazla veya eksik anahtar ModelError</td></tr>
+</table>
+<p>Alt sınıf çocuk bağlamak için korumalı <code>register_parameter</code>, <code>register_buffer</code>, <code>register_module</code> kullanır. Buffer öğrenilmez ama checkpoint’e girer. BatchNorm’un <code>running_mean</code> ve <code>running_var</code> buffer’dır.</p>
+<p>Hata tipi <code>nexus_model::ModelError</code>, <code>std::runtime_error</code> türevidir. Mesajlar İngilizcedir: <code>"Linear input last dimension must equal in_features"</code> gibi.</p>
+
+<h1><span class="num">10</span>Serileştirme</h1>
+<p>Dosya: <code>core/serialization.hpp</code>. <code>StateDict</code> bir <code>std::map&lt;string, Tensor&gt;</code> tutar. <code>state_dict()</code> değerleri klonlar; sonra eğitim checkpoint’i bozmaz.</p>
+<pre>StateDict snap = model.state_dict();
+save_state_dict(snap, "model.nxm");
+StateDict loaded = load_state_dict_file("model.nxm");
+model.load_state_dict(loaded);</pre>
+<p>İkili düzen, küçük endian:</p>
+<ol>
+  <li>4 bayt sihir: <code>NXM1</code></li>
+  <li><code>uint32</code> kayıt sayısı</li>
+  <li>Her kayıt: <code>uint32</code> isim uzunluğu, isim baytları, <code>uint32</code> rank, rank adet <code>uint64</code> boyut, ham float32</li>
+</ol>
+<p>Anahtarlar hiyerarşiktir. <code>Sequential</code> çocuklarını <code>"0"</code>, <code>"1"</code> diye adlandırır. Linear’ın alanı <code>weight</code> ve varsa <code>bias</code> olur. Üç katmanlı bir ağda ilk ağırlık <code>0.weight</code>’tir.</p>
+<pre>bool threw = false;
+try {
+  StateDict extra = model.state_dict();
+  extra.items["yok"] = Tensor::zeros({1});
+  model.load_state_dict(extra);          <span class="c">// strict</span>
+} catch (const ModelError&amp;) { threw = true; }</pre>
+<p><code>load_state_dict(state, false)</code> eksik anahtarı atlar, fazla anahtarı yok sayar. Şekil uyuşmazlığı strict olmasa da hata verir.</p>
+
+<h1><span class="num">11</span>Konteynerler</h1>
+<h2>Sequential</h2>
+<p><code>containers/sequential.hpp</code>. Forward sırayla, backward tersten. Ara aktivasyonu ikinci kez saklamaz; her katman kendi girdisini tutar.</p>
+<pre>auto net = Sequential({
+  std::make_shared&lt;Linear&gt;(784, 256),
+  std::make_shared&lt;ReLU&gt;(),
+  std::make_shared&lt;Dropout&gt;(0.3f),
+  std::make_shared&lt;Linear&gt;(256, 10)
+});
+net.add(std::make_shared&lt;LogSoftmax&gt;());
+Module&amp; first = net[0];</pre>
+<p><code>size()</code> katman sayısıdır. İsimler ekleme sırasının metnidir, bu yüzden araya katman sokmak eski checkpoint anahtarlarını kaydırır.</p>
+
+<h2>ModuleList ve ModuleDict</h2>
+<p>İkisi de <code>parameters()</code> için çocukları kaydeder. İkisinin de örtük <code>forward</code>’u yoktur; çağırırsanız <code>ModelError</code> fırlatır. Sıra veya isim sizdedir.</p>
+<pre>ModuleList trunk({ std::make_shared&lt;Linear&gt;(32, 32) });
+ModuleDict heads;
+heads.add("sinif", std::make_shared&lt;Linear&gt;(32, 10));
+heads.add("kutu", std::make_shared&lt;Linear&gt;(32, 4));
+Tensor h = trunk[0].forward(x);
+Tensor logits = heads["sinif"]-&gt;forward(h);</pre>
+<p>Geri yayılımı da sizin sıranız belirler. İki başlık aynı gövdeyi paylaşıyorsa gövde gradyanı iki backward’ın toplamıdır; arada <code>zero_grad</code> çağırma.</p>
+
+<h1><span class="num">12</span>Linear</h1>
+<p>Dosya: <code>layers/linear.hpp</code>.</p>
+<p class="sig">Linear(in_features, out_features, use_bias = true)</p>
+<div class="formula">Y = X Wᵀ + b &nbsp;&nbsp; X: […, in] &nbsp; W: [out, in] &nbsp; b: [out]</div>
+<div class="formula">dX += dY · W &nbsp;&nbsp; dW += dYᵀ · X &nbsp;&nbsp; db += Σ dY</div>
+<p>Çekirdek biriktirir. <code>dX</code> her backward’da sıfırlanır. <code>dW</code> ve <code>db</code> ancak <code>zero_grad</code> ile temizlenir. Erişim, devrik matrisi belleğe yazmadan satır satır axpy’dir.</p>
+<pre>Linear fc(2, 3, true);
+float* w = fc.weight()-&gt;data.data();
+<span class="c">// W satırları: [1, 0], [0, 1], [1, 1]</span>
+w[0]=1; w[1]=0; w[2]=0; w[3]=1; w[4]=1; w[5]=1;
+fc.bias()-&gt;data[0]=0; fc.bias()-&gt;data[1]=0; fc.bias()-&gt;data[2]=1;
+Tensor x = Tensor::from_values({2, 2}, {1, 2, 3, 4});
+Tensor y = fc.forward(x);
+<span class="c">// y = {1, 2, 4,  3, 4, 8}</span></pre>
+<p><code>weight()</code> ve <code>bias()</code> <code>shared_ptr&lt;Parameter&gt;</code> döner. <code>in_features == 0</code> veya çıkış 0 ise kurucu hata verir. Son boyut <code>in_features</code> değilse forward hata verir.</p>
+
+<h1><span class="num">13</span>Aktivasyonlar</h1>
+<p>Dosya: <code>activations/activations.hpp</code>. Hepsi <code>Module</code>’dür, Sequential’a girer. ReLU, LeakyReLU, GELU’nun tanh yaklaşımı, Sigmoid, Tanh, SiLU ve Softmax AVX2 tablosuna bağlıdır. Tam GELU (erf) skalar kalır.</p>
+<table>
+  <tr><th>Sınıf</th><th>İleri</th><th>Geri</th></tr>
+  <tr><td>ReLU()</td><td>max(x, 0)</td><td>x &gt; 0 iken dy, değilse 0. x = 0 alttürevi 0</td></tr>
+  <tr><td>LeakyReLU(α=0.01)</td><td>x&gt;0 ? x : αx</td><td>eğim 1 veya α</td></tr>
+  <tr><td>PReLU(init=0.25)</td><td>öğrenilen α</td><td>α da gradyan alır</td></tr>
+  <tr><td>ELU(α=1)</td><td>x&gt;0 ? x : α(eˣ−1)</td><td>Clevert, 2016</td></tr>
+  <tr><td>GELU(tanh_approx=false)</td><td>x Φ(x)</td><td>Hendrycks. true ise tanh yaklaşımı</td></tr>
+  <tr><td>Sigmoid()</td><td>1/(1+e⁻ˣ)</td><td>σ(1−σ)</td></tr>
+  <tr><td>Tanh()</td><td>tanh</td><td>1 − tanh²</td></tr>
+  <tr><td>SiLU()</td><td>x σ(x)</td><td>Elfwing, 2018</td></tr>
+  <tr><td>Mish()</td><td>x tanh(softplus(x))</td><td>Misra, 2019</td></tr>
+  <tr><td>Softmax()</td><td>son boyutta, max çıkarılır</td><td>y ⊙ (dy − ⟨dy, y⟩)</td></tr>
+  <tr><td>LogSoftmax()</td><td>x − logsumexp</td><td>dy − softmax · Σdy</td></tr>
+</table>
+<div class="warn"><strong>Softmax ve çapraz entropi</strong>
+NexusLoss <code>CrossEntropyLoss</code> ham logit ister. Modele ayrıca Softmax koyup onun çıkışını bu kayba vermeyin. LogSoftmax da aynı kayıpla çift sayılır. Sınıflandırma kafası Linear ile bitsin.</div>
+<pre>Sequential block({
+  std::make_shared&lt;Linear&gt;(64, 64),
+  std::make_shared&lt;GELU&gt;(true),   <span class="c">// tanh yaklaşımı, SIMD</span>
+  std::make_shared&lt;Linear&gt;(64, 10)
+});</pre>
+
+<h1><span class="num">14</span>Dropout</h1>
+<p class="sig">Dropout(probability = 0.5, seed = 0xD1CE)</p>
+<p>Eğitimde ters dropout: <span class="formula">y = x · mask / (1 − p) &nbsp;&nbsp; mask ~ Bernoulli(1 − p)</span> Değerlendirmede y = x. Backward aynı maskeyi kullanır: <span class="formula">dx = dy · mask / (1 − p)</span></p>
+<p>Maske forward anındaki <code>is_training()</code> ile seçilir ve saklanır. <code>p = 0</code> birimdir. <code>p = 1</code> eğitimde çıkışı sıfırlar. Tohum her forward’da artar; aynı tohumla kurulan iki katman, aynı uzunluktaki ilk çağrıda aynı maskeyi üretir.</p>
+<pre>Dropout drop(0.3f, 7);
+drop.train();
+Tensor y = drop.forward(x);
+drop.eval();
+Tensor z = drop.forward(x);   <span class="c">// z, x ile aynı</span></pre>
+
+<h1><span class="num">15</span>Konvolüsyon</h1>
+<p>Dosya: <code>layers/conv.hpp</code>. PyTorch ile aynı çapraz korelasyon. Çekirdek im2col ile açılır, çarpım Linear ile aynı GEMM’e gider. Workspace katmanda bir kez ayrılır: sütun tamponu ve onun gradyanı, yani <code>2 × col</code>.</p>
+<p>Girdi <code>[N, C, uzamsal…]</code>. Ağırlık <code>[K, C/groups, çekirdek…]</code>. Uzamsal boyutlar sağa hizalanır; Conv1D, Conv2D ve Conv3D aynı çekirdeği paylaşır.</p>
+<table>
+  <tr><th>Kurucu</th><th>Not</th></tr>
+  <tr><td class="sig">Conv1D(in, out, k, stride=1, pad=0, dil=1, groups=1, bias=true)</td><td>Girdi [N,C,L]</td></tr>
+  <tr><td class="sig">Conv2D(in, out, k, stride=1, pad=0, dil=1, groups=1, bias=true)</td><td>Kare çekirdek. Girdi [N,C,H,W]</td></tr>
+  <tr><td class="sig">Conv2D(in, out, kH, kW, sH, sW, pH, pW, dH, dW, groups=1, bias=true)</td><td>Ayrı eksen</td></tr>
+  <tr><td class="sig">Conv3D(in, out, k, stride=1, pad=0, dil=1, groups=1, bias=true)</td><td>Üç eksen aynı sayılar. Girdi [N,C,D,H,W]</td></tr>
+  <tr><td class="sig">DepthwiseConv2D(channels, k, stride=1, pad=0)</td><td>groups = channels, çıkış kanalı = giriş</td></tr>
+</table>
+<div class="formula">çıkış = ⌊(girdi + 2·pad − dil·(çekirdek−1) − 1) / stride⌋ + 1</div>
+<p>Boş çıkış <code>ModelError</code> verir. Groups, <code>in_channels</code>’ı bölmek zorundadır.</p>
+<pre>Conv2D conv(1, 1, 2, 1, 0);          <span class="c">// 2×2, stride 1, pad 0</span>
+float* w = conv.parameters()[0]-&gt;data.data();
+w[0]=1; w[1]=0; w[2]=0; w[3]=1;       <span class="c">// birim köşegen</span>
+conv.parameters()[1]-&gt;data.zero();
+Tensor img = Tensor::from_values({1,1,3,3}, {1,2,3, 4,5,6, 7,8,9});
+Tensor y = conv.forward(img);        <span class="c">// {6, 8, 12, 14}, şekil [1,1,2,2]</span></pre>
+<p>Padding 1 ve 3×3 çekirdek, “same” boyut için stride 1 ile birlikte kullanılır: <code>Conv2D(16, 32, 3, 1, 1)</code>.</p>
+
+<h1><span class="num">16</span>Pooling</h1>
+<p>Dosya: <code>layers/pooling.hpp</code>. Parametre yoktur.</p>
+<table>
+  <tr><th>Sınıf</th><th>İleri</th><th>Geri</th></tr>
+  <tr><td class="sig">MaxPool2D(k) veya (kH,kW,sH,sW,pH,pW)</td><td>Penceredeki ilk maksimum kazanır (&gt;)</td><td>Gradyan yalnızca o indekse. İndeks forward’da saklanır</td></tr>
+  <tr><td class="sig">AvgPool2D(k, stride=-1, pad=0, count_include_pad=true)</td><td>Ortalama. stride verilmezse çekirdeğe eşittir</td><td>Pencereye eşit dağıtılır</td></tr>
+  <tr><td class="sig">GlobalAvgPool2D()</td><td>H·W üzerinden ortalama. Çıkış [N, C]</td><td>Her uzamsal elemana 1/(H·W)</td></tr>
+</table>
+<pre>MaxPool2D pool(2, 2);
+Tensor x = Tensor::from_values({1,1,2,2}, {1.f, 3.f, 2.f, 0.f});
+Tensor y = pool.forward(x);     <span class="c">// {3}</span>
+AvgPool2D avg(2, 2);
+Tensor z = avg.forward(x);      <span class="c">// {1.5}</span></pre>
+<p>Sınıflandırma gövdesinden sonra tipik dizi: Conv → ReLU → Conv → ReLU → GlobalAvgPool2D → Linear. Global havuz uzamsal boyutu kaldırdığı için Linear’a [N, C] gider.</p>
+
+<h1><span class="num">17</span>Normalizasyon</h1>
+<p>Dosya: <code>layers/normalization.hpp</code>. Kaynak: Ioffe ve Szegedy, 2015 (BatchNorm); Ba, Kiros ve Hinton (LayerNorm).</p>
+<table>
+  <tr><th>Sınıf</th><th>Eksen</th><th>Durum</th></tr>
+  <tr><td class="sig">BatchNorm(num_features, eps=1e-5, momentum=0.1, affine=true)</td><td>Kanal, N ve uzamsal birlikte</td><td>running_mean, running_var buffer</td></tr>
+  <tr><td>BatchNorm1D / BatchNorm2D</td><td>Aynı kurucu. 1D’de [N,C] veya [N,C,L], 2D’de [N,C,H,W]</td><td>Aynı</td></tr>
+  <tr><td class="sig">LayerNorm(normalized_size, eps=1e-5)</td><td>Son boyut</td><td>Öğrenilen weight=1, bias=0. Running yok</td></tr>
+  <tr><td class="sig">GroupNorm(groups, channels, eps=1e-5, affine=true)</td><td>Kanal grupları</td><td>Running yok</td></tr>
+  <tr><td class="sig">InstanceNorm(channels, eps, affine)</td><td>GroupNorm(channels, channels)</td><td>Her örnek, her kanal</td></tr>
+</table>
+<p>Eğitimde BatchNorm batch ortalamasını ve popülasyon varyansını (bölü m) kullanır. <code>running_var</code> güncellemesi, m &gt; 1 iken yansız bölendir (bölü m−1). Momentum PyTorch’taki gibidir: running ← (1−momentum)·running + momentum·batch. <code>eval()</code> saklanan running değerleri kullanır. Eval backward, eğitim Jakobyanı değildir; yalnızca affine ölçek yoludur.</p>
+<div class="formula">x̂ = (x − μ) / √(σ² + ε) &nbsp;&nbsp; y = γ x̂ + β</div>
+<p>LayerNorm son boyutu <code>normalized_size</code> olmayan girdide hata verir. Transformer blokları bunu kullanır. BatchNorm küçük batch’te gürültülüdür; batch 1 ile eğitim istatistiği anlamsızlaşır, eval’e geçmek veya GroupNorm seçmek gerekir.</p>
+<pre>BatchNorm2D bn(32);
+bn.train();
+Tensor y = bn.forward(images);   <span class="c">// running güncellenir</span>
+bn.eval();
+Tensor z = bn.forward(images);   <span class="c">// running kullanılır</span></pre>
+
+<h1><span class="num">18</span>Embedding</h1>
+<p class="sig">Embedding(num_embeddings, embedding_dim, padding_idx = -1)</p>
+<p>Girdi float indekstir; değerler tam sayı olmalıdır. Çıkış, indeks tensörünün şekline bir boyut ekler: <code>[4]</code> → <code>[4, dim]</code>, <code>[B, T]</code> → <code>[B, T, dim]</code>. Backward yalnızca dokunulan satırlara scatter-add yapar. Aynı indeks iki kez geçtiyse o satırın gradyanı iki kez eklenir. <code>padding_idx</code> satırı 0 üretir ve gradyan almaz. Varsayılan −1, hiçbir satırı pad yapmaz. Başlangıç <code>normal(0, 1)</code>.</p>
+<pre>Embedding emb(1000, 64, /*padding_idx=*/0);
+Tensor idx = Tensor::from_values({2, 3}, {1, 2, 0,  4, 4, 1});
+Tensor y = emb.forward(idx);     <span class="c">// [2, 3, 64], 0. satırlar sıfır</span></pre>
+
+<h1><span class="num">19</span>RNN, LSTM, GRU</h1>
+<p>Dosya: <code>layers/recurrent.hpp</code>. Üçü de batch-first bekler: <code>[B, T, F]</code>. Çıkış <code>[B, T, H]</code>. Zaman dilimi bitişik olmadığı için her adım <code>[B, F]</code> olarak paketlenir. Hidden ve hücre tamponları kurucuda değil, ilk şekle göre katman alanında tutulur ve sonraki adımlarda üzerine yazılır.</p>
+<table>
+  <tr><th>Sınıf</th><th>Kapılar</th><th>Başlangıç</th></tr>
+  <tr><td class="sig">RNN(input, hidden, layers=1, truncate_bptt=0)</td><td>tanh</td><td>Kaiming + orthogonal tekrar</td></tr>
+  <tr><td class="sig">LSTM(input, hidden, layers=1, truncate_bptt=0)</td><td>i, f, g, o — PyTorch sırası</td><td>Forget bias bloğu 1</td></tr>
+  <tr><td class="sig">GRU(input, hidden, layers=1, truncate_bptt=0)</td><td>r, z, n</td><td>LSTM’den az parametre</td></tr>
+</table>
+<div class="formula">RNN: hₜ = tanh(Wᵢₕ xₜ + bᵢₕ + Wₕₕ hₜ₋₁ + bₕₕ)</div>
+<div class="formula">LSTM: i,f,g,o = parçala(W x + U h + b) &nbsp; cₜ = σ(f)⊙cₜ₋₁ + σ(i)⊙tanh(g) &nbsp; hₜ = σ(o)⊙tanh(cₜ)</div>
+<div class="formula">GRU: r,z = σ(…) &nbsp; n = tanh(Wₙx + r⊙Uₙh) &nbsp; h′ = (1−z)⊙n + z⊙h</div>
+<p><code>truncate_bptt &gt; 0</code> ise gradyan pencerenin öncesine gitmez. Uzun dizide bellek ve süre bununla kesilir. Çift yön ve paketli gizli durum dönüşü yoktur; her forward sıfır durumdan başlar, durum dizinin kendi zamanı boyunca taşınır.</p>
+<pre>LSTM lstm(32, 64, /*num_layers=*/1, /*truncate_bptt=*/0);
+Tensor seq = Tensor::zeros({8, 20, 32});   <span class="c">// B=8, T=20, F=32</span>
+Tensor y = lstm.forward(seq);              <span class="c">// [8, 20, 64]</span></pre>
+<p>Çok katmanlı kurulumda üst katmanın girdisi alt katmanın gizli dizisidir. Parametre adları katman indeksini taşır; checkpoint anahtarı buna göre uzar.</p>
+
+<h1><span class="num">20</span>Attention ve Transformer</h1>
+<p>Dosya: <code>layers/attention.hpp</code>. Vaswani ve diğerleri, 2017. Q, K, V ve çıkış projeksiyonları analitik Linear’dır. Softmax ∘ matmul MicroTape’tedir.</p>
+<div class="formula">Attention(Q,K,V) = softmax(Q Kᵀ / √d) V</div>
+<p class="sig">MultiHeadAttention(embed, num_heads, dropout=0, causal=false)</p>
+<p><code>embed</code> kafa sayısına bölünmelidir. Girdi <code>[B, T, E]</code>. Self-attention için <code>forward(x)</code> yeter. Çapraz attention:</p>
+<pre>Tensor ctx = mha.forward(query, key, value, /*mask=*/nullptr);</pre>
+<p><code>causal=true</code> üst üçgene −1e9 ekler; query ve key uzunluğu eşit olmalıdır. Dropout, eğitimde ve p &gt; 0 iken olasılıklara ters dropout uygular. Self-attention backward’ı dq+dk+dv döner. Çapraz attention dq döner; bellek gradyanı <code>grad_key_input()</code> ve <code>grad_value_input()</code> içindedir. K ve V projeksiyonlarının parametre gradyanı her iki durumda da birikir.</p>
+<p class="sig">PositionalEncoding(embed, max_len=512, learnable=false)</p>
+<p>Sinüs ve kosinüs tablosu. <code>learnable=true</code> ise tablo parametre olur. Girdi <code>[B, T, E]</code>, T kurucudaki <code>max_len</code>’i aşmamalıdır.</p>
+<p class="sig">TransformerEncoderLayer(embed, heads, ff=0, dropout=0.1)</p>
+<p><code>ff == 0</code> ise gizli genişlik <code>4·embed</code>. Post-norm:</p>
+<div class="formula">x = LN(x + Dropout(Attn(x))) &nbsp;&nbsp; x = LN(x + Dropout(GELU-FFN(x)))</div>
+<p class="sig">TransformerDecoderLayer(embed, heads, ff=0, dropout=0.1)</p>
+<p>Nedensel self-attention, ardından çapraz attention, ardından FFN. Üçü de post-norm. Tek argümanlı <code>forward(tgt)</code>, daha önce <code>forward(tgt, memory)</code> çağrılmadıysa hata verir. Dönüş, hedef gradyanıdır; bellek gradyanı çapraz attention üyesinin içinde kalır.</p>
+<pre>TransformerEncoderLayer enc(64, 8, /*ff=*/128, /*dropout=*/0.1f);
+Tensor tokens = Tensor::zeros({2, 16, 64});
+Tensor hidden = enc.forward(tokens);
+
+TransformerDecoderLayer dec(64, 8, 128, 0.1f);
+Tensor tgt = Tensor::zeros({2, 10, 64});
+Tensor out = dec.forward(tgt, hidden);</pre>
+<div class="note"><strong>Maske</strong>
+<code>MultiHeadAttention::forward</code> dördüncü argümanı toplanan bir maskedir, çarpılan değil. Tutmak istemediğiniz konuma büyük negatif (örneğin −1e9) yazın. Decoder’ın self-attention’ı kendi nedensel maskesini kurar.</div>
+
+<h1><span class="num">21</span>Flatten, Reshape, Residual</h1>
+<pre>Flatten flat;                         <span class="c">// [N, ...] → [N, -1], kopyalar</span>
+Reshape view({-1, 32});               <span class="c">// eleman sayısı aynıysa görünüm</span>
+auto block = ResidualBlock(std::make_shared&lt;Sequential&gt;({
+  std::make_shared&lt;Linear&gt;(32, 32),
+  std::make_shared&lt;ReLU&gt;(),
+  std::make_shared&lt;Linear&gt;(32, 32)
+}));</pre>
+<p>Residual: <span class="formula">y = F(x) + x &nbsp;&nbsp; dx = dF + dy</span> F(x) ile x’in eleman sayısı aynı olmalıdır. Şekil denetimi yapmaz; uyuşmazlık taşar. Conv artığında kanal sayısı değişiyorsa F’nin çıkışını x ile aynı şekle getirin, sonra ResidualBlock’a verin.</p>
+<p>Flatten, çağıranın deposuna görünüm döndürmez; kendi tamponuna kopyalar. Böylece sonraki katman girişi ezerse Flatten’ın sakladığı girdi bozulmaz.</p>
+
+<h1><span class="num">22</span>MicroTape</h1>
+<p>Dosya: <code>core/micro_tape.hpp</code>. Kullanıcı kodu çoğu zaman buna dokunmaz. Attention onu içeriden kullanır. Yeni bir softmax-matmul katmanı yazıyorsanız aynı deseni izleyin.</p>
+<table>
+  <tr><th>İşlem</th><th>Şekil</th></tr>
+  <tr><td class="sig">load(tensor)</td><td>Yuvaya kopya. Kimlik döner</td></tr>
+  <tr><td class="sig">matmul_bt(a, b)</td><td>[B,M,K] × [B,N,K]ᵀ → [B,M,N]</td></tr>
+  <tr><td class="sig">matmul(a, b)</td><td>[B,M,K] × [B,K,N] → [B,M,N]</td></tr>
+  <tr><td class="sig">scale, add, mul</td><td>Eleman bazında</td></tr>
+  <tr><td class="sig">add_matrix(a, bias)</td><td>[R, satır, sütun] üzerine [satır, sütun] yayınlanır. Bias’ın gradyanı yoktur</td></tr>
+  <tr><td class="sig">softmax(a)</td><td>Son boyut</td></tr>
+  <tr><td class="sig">backward(root, grad)</td><td>Yuvaların gradyanını sıfırlar, işlemleri tersten yürütür</td></tr>
+  <tr><td class="sig">reset()</td><td>İşlem listesini siler, kapasiteyi ve yuvaları tutar</td></tr>
+</table>
+<p>İkinci forward, şekil aynıysa yuva ayırmaz. <code>value(id)</code> ve <code>grad(id)</code> o yuvaya bakar.</p>
+
+<h1><span class="num">23</span>SIMD, CUDA, MatrixFlash</h1>
+<h2>İşlemci</h2>
+<p><code>simd/simd_dispatch.cpp</code> CPUID ve <code>XGETBV</code> ile işletim sisteminin YMM/ZMM durumunu kaydedip kaydetmediğine bakar. AVX-512F ve OS desteği varsa <code>linear_forward</code>, <code>dot</code> ve <code>relu</code> AVX-512 seçimine gider; Linear bu girişten bloklu AVX2 matris motoruna yönlenir. Diğer sıcak çekirdekler AVX2+FMA’dır. Hiçbiri yoksa skalar gövde kalır.</p>
+<pre>nexus_model::kernels::set_force_scalar(true);   <span class="c">// test ve karşılaştırma</span>
+auto y = layer.forward(x);
+nexus_model::kernels::set_force_scalar(false);</pre>
+<p>AVX2 softmax: maksimum SIMD ile bulunur, sonra vektör exp (Cephes tarzı) ve toplam. Tam GELU erf skalar kalır.</p>
+
+<h2>CUDA</h2>
+<p><code>NEXUS_MODEL_WITH_CUDA=ON</code> iken üç çekirdek derlenir. Host <code>Tensor</code> onları çağırmaz. Çağıran cihaz işaretçisi verir:</p>
+<table>
+  <tr><th>İşlev</th><th>Dosya</th></tr>
+  <tr><td class="sig">cuda::fused_softmax(x, y, rows, cols)</td><td>cuda/fused_softmax.cuh</td></tr>
+  <tr><td class="sig">cuda::fused_layernorm(x, gamma, beta, y, rows, cols, eps)</td><td>cuda/fused_layernorm.cuh</td></tr>
+  <tr><td class="sig">cuda::relu / cuda::gelu_tanh</td><td>cuda/activation_kernels.cuh</td></tr>
+</table>
+
+<h2>MatrixFlash köprüsü</h2>
+<p><code>bridge/matrixflash.hpp</code> yalnızca <code>NEXUS_MODEL_WITH_MATRIXFLASH</code> tanımlıyken <code>matrix_pro::multiply</code> sarmalar. Çıktı cihaz belleğindedir. NexusModel kendi cuBLAS’ını yazmaz. Varsayılan eğitim yolu host AVX GEMM’dir.</p>
+
+<h2>NexusOptim adaptörü</h2>
+<p><code>adapters/nexus_optim.hpp</code> çekirdeğe bağlı değildir. Örneğe veya kendi eğitim dosyanıza ekleyin. <code>requires_grad == false</code> olanları atlar.</p>
+<pre>#include "nexus_model/adapters/nexus_optim.hpp"
+#include "nexus_optim/algorithms/adamw.hpp"
+
+nexus_optim::ParamGroupOptions opt;
+opt.learning_rate = 1e-3;
+auto group = nexus_model::as_param_group(model, opt);
+nexus_optim::AdamW&lt;float&gt;::Options adam;
+adam.lr = 1e-3;
+adam.weight_decay = 0.01;
+nexus_optim::AdamW&lt;float&gt; optimizer({group}, adam);</pre>
+
+<h1><span class="num">24</span>Uçtan uca eğitim</h1>
+<p>Dosya: <code>examples/train_end_to_end_example.cpp</code>. Aşağıdaki döngü o dosyanın sözleşmesidir ve bu makinede çalıştırılmıştır. 96 örnek, 8 özellik, 3 sınıf. Kayıp 8 epoch sonunda yaklaşık 1.68’den 0.084’e inmiştir.</p>
+<p>Gerçek imzalar, tasarım taslağındaki sözde koddan farklıdır. Bunları kullanın:</p>
+<ul>
+  <li><code>nexusdata::InMemoryDataset(features [N,F], labels [N])</code>. <code>dataset.shuffle()</code> yoktur.</li>
+  <li><code>random_split(dataset, {0.8, 0.2}, seed)</code> bir <code>pair&lt;Subset, Subset&gt;</code> döner.</li>
+  <li><code>DataLoaderOptions</code> içinde <code>batch_size</code>, <code>shuffle</code>, <code>seed</code>.</li>
+  <li><code>Batch.inputs</code> ve <code>Batch.labels</code> <code>NDArray</code>’dir.</li>
+  <li><code>nexusloss::classification::CrossEntropyLoss&lt;float&gt;</code> tek örnek alır: <code>forward(span logits, size_t sınıf)</code>. Batch için satır döngüsü ve gradyanı batch boyutuna bölme gerekir. Umbrella başlık <code>nexusloss/nexusloss.hpp</code> regression’ı önce çektiği için onu include edin.</li>
+  <li>AdamW, <code>AdamImpl&lt;float, true&gt;</code> kısayoludur.</li>
+</ul>
+<pre>#include "nexus_model/adapters/nexus_optim.hpp"
+#include "nexus_model/nexus_model.hpp"
+#include "nexusdata/dataset/in_memory.hpp"
+#include "nexusdata/dataset/split.hpp"
+#include "nexusdata/loading/dataloader.hpp"
+#include "nexusloss/nexusloss.hpp"
+#include "nexus_optim/algorithms/adamw.hpp"
+
+auto model = nexus_model::Sequential({
+  std::make_shared&lt;nexus_model::Linear&gt;(features, 16),
+  std::make_shared&lt;nexus_model::ReLU&gt;(),
+  std::make_shared&lt;nexus_model::Linear&gt;(16, classes)
+});
+
+nexusloss::classification::CrossEntropyLoss&lt;float&gt; loss_fn;
+nexus_optim::AdamW&lt;float&gt; optimizer(
+  { nexus_model::as_param_group(model, group_options) }, adam);
+
+for (int epoch = 0; epoch &lt; epochs; ++epoch) {
+  for (nexusdata::Batch batch : loader) {
+    optimizer.zero_grad();
+    auto B = batch.inputs.shape()[0];
+    nexus_model::Tensor inputs({B, features});
+    <span class="c">// NDArray float32 → Tensor kopyası</span>
+    std::memcpy(inputs.data(), batch.inputs.data&lt;float&gt;(),
+                inputs.numel() * sizeof(float));
+
+    auto prediction = model.forward(inputs);
+    auto grad = nexus_model::Tensor::zeros(prediction.shape_vec());
+    for (size_t row = 0; row &lt; B; ++row) {
+      size_t label = (size_t)(batch.labels.data&lt;float&gt;()[row] + 0.5f);
+      std::span&lt;const float&gt; logits(prediction.data() + row * classes, classes);
+      loss_fn.forward(logits, label);
+      auto g = loss_fn.backward();
+      for (int c = 0; c &lt; classes; ++c)
+        grad[row * classes + c] = g[c] / (float)B;
+    }
+    model.backward(grad);
+    optimizer.step();
+  }
+}</pre>
+<p>Doğrulama kopyası aynı dosyadadır. Derlemek için <code>NEXUS_MODEL_BUILD_EXAMPLES=ON</code>. Çalıştırılan ikili: <code>build-e2e/Release/train_end_to_end.exe</code>.</p>
+
+<h2>Checkpoint’i eğitime bağlamak</h2>
+<pre>save_state_dict(model.state_dict(), "epoch_son.nxm");
+<span class="c">// sonra</span>
+model.load_state_dict(load_state_dict_file("epoch_son.nxm"));
+model.eval();</pre>
+<p>Yüklemeden sonra optimizer durumunu ayrıca saklamazsınız; NexusOptim’in kendi <code>state_dict</code>’i vardır ve bu kılavuzun konusu değildir. Yalnızca ağırlıklar <code>NXM1</code> dosyasındadır. BatchNorm running istatistikleri buffer olduğu için onlar da yazılır.</p>
+
+<h2>Küçük bir conv ağı</h2>
+<pre>Sequential cnn({
+  std::make_shared&lt;Conv2D&gt;(1, 8, 3, 1, 1),
+  std::make_shared&lt;ReLU&gt;(),
+  std::make_shared&lt;MaxPool2D&gt;(2),
+  std::make_shared&lt;Conv2D&gt;(8, 16, 3, 1, 1),
+  std::make_shared&lt;ReLU&gt;(),
+  std::make_shared&lt;GlobalAvgPool2D&gt;(),
+  std::make_shared&lt;Linear&gt;(16, 10)
+});
+cnn.train();
+Tensor images = Tensor::zeros({32, 1, 28, 28});
+Tensor logits = cnn.forward(images);     <span class="c">// [32, 10]</span></pre>
+
+<h1><span class="num">25</span>Performans ve optimizasyon</h1><p>Ölçüm: 2026-09-29. AMD Ryzen 7 5800H with Radeon Graphics. Float32, tek hesaplama iş parçacığı, Release.</p><p>Linear 6×16 register blokları ve 8 KiB ağırlık panelleri kullanır. Paketleme ölçüme dahildir. Geri geçiş geçici transpoz oluşturmaz; convolution aynı motoru paylaşır. LayerNorm iki geçişli float64 istatistik hesabını SIMD ile yürütür.</p><h2>Eski / yeni sürüm</h2><p>Arşivlenmiş kaynak ve yeni sürüm aynı C++ ölçüm koduyla derlendi. Üç turda sürüm sırası değiştirildi; her tur 20 ısınma ve 30×5 çağrı. Aşağıdaki değerler 90 örneğin medyanıdır.</p><table><thead><tr><th>Çekirdek</th><th>Eski ms</th><th>Yeni ms</th><th>Oran</th></tr></thead><tbody><tr><td>linear_forward_128_512_512</td><td>5.5838</td><td>1.8332</td><td>3.05×</td></tr><tr><td>linear_backward_128_512_512</td><td>14.2197</td><td>4.0230</td><td>3.53×</td></tr><tr><td>softmax_128_512</td><td>0.1421</td><td>0.0877</td><td>1.62×</td></tr><tr><td>layernorm_128_512</td><td>0.3115</td><td>0.0915</td><td>3.40×</td></tr></tbody></table><h2>NumPy ve PyTorch karşılaştırması</h2><p>Üç turda kütüphane sırası değiştirilir. Aynı float32 girdiler, önceden ayrılmış çıktılar. NexusModel C++ çağrı maliyeti; NumPy/PyTorch Python çağrı maliyeti dahildir. Her çıktı float64 referansı ile doğrulanır. Süreler ms.</p><table><thead><tr><th>İşlem / şekil</th><th>NexusModel</th><th>NumPy</th><th>PyTorch</th></tr></thead><tbody><tr><td>GEMM 1 × 256 × 256</td><td>0.00602</td><td>0.01371</td><td>0.01938</td></tr><tr><td>GEMM 7 × 129 × 33</td><td>0.00394</td><td>0.01593</td><td>0.00729</td></tr><tr><td>GEMM 32 × 256 × 256</td><td>0.15463</td><td>0.19405</td><td>0.14213</td></tr><tr><td>GEMM 96 × 768 × 192</td><td>0.74106</td><td>0.89292</td><td>0.80820</td></tr><tr><td>GEMM 128 × 512 × 512</td><td>1.76533</td><td>1.90798</td><td>1.86163</td></tr><tr><td>GEMM 256 × 1024 × 1024</td><td>15.06220</td><td>13.73203</td><td>14.43817</td></tr><tr><td>ReLU 65,536</td><td>0.01809</td><td>0.10000</td><td>0.02898</td></tr><tr><td>ReLU 1,048,576</td><td>0.23882</td><td>1.38747</td><td>0.31128</td></tr><tr><td>ReLU 4,194,304</td><td>2.19863</td><td>5.54118</td><td>2.31279</td></tr></tbody></table><p>NexusModel 7/9 iş yükünde en düşük medyanı verdi. Küçük işlerde Python çağrı maliyeti önemlidir. Bu sonuçlar bütün boyutlarda veya bütün modellerde dünya birinciliği kanıtı değildir.</p><h2 style="break-before:page">Tam katman ölçümleri</h2><p>20 ısınma, 30×5 çağrı, tek tur medyanı. ReLU ileri; diğerleri ileri + geri. Eski katman sonuçlarıyla doğrudan optimizasyon oranı hesaplanmaz.</p><table><thead><tr><th>Katman</th><th>Şekil</th><th>Medyan ms</th></tr></thead><tbody><tr><td>Linear</td><td>64 × 784 → 256</td><td>2.18014</td></tr><tr><td>Linear · scalar</td><td>32 × 256 → 256</td><td>5.30394</td></tr><tr><td>Linear · SIMD</td><td>32 × 256 → 256</td><td>0.40047</td></tr><tr><td>ReLU · scalar</td><td>1 × 2²⁰</td><td>0.65276</td></tr><tr><td>ReLU · SIMD</td><td>1 × 2²⁰</td><td>0.62537</td></tr><tr><td>Conv2D</td><td>8 × 16 × 28 × 28 · K32 · k3</td><td>34.52230</td></tr><tr><td>MultiHeadAttention</td><td>4 × 32 × 64 · H4</td><td>0.68537</td></tr></tbody></table><div class="note"><strong>Ölçüm sınırları</strong>Güç profili, sıcaklık, çekirdek yakınlığı ve OS zamanlaması sabitlenmedi. GPU sonuçları eski sürüm arşividir ve bu optimizasyonda yeniden ölçülmedi. Ham örnekler: docs/public/benchmark-comparison.json ve optimization-results.json. Kaynaklar, sürümler ve hash değerleri raporda bulunur.</div><pre>cmake -S . -B build
+cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure
+python docs/benchmarks/compare_libraries.py</pre>
+<h1><span class="num">26</span>Testler ve ölçüm</h1>
+<p>Ek çekirdek testleri <code>tests/test_kernels.cpp</code> dosyasında; kuyruk boyutları, gradyan birikimi, gruplu convolution ve teyp büyümesini denetler. <code>tests/test_model.cpp</code> ise şu çalıştırılabilirde toplanır: <code>nexus_model_tests</code>. Kapsam:</p>
+<ul>
+  <li>Linear için elle matris. Ağırlık ve girdi yukarıdaki 2×3 örneğidir. Çıkış, dW, db ve dX birebir beklenir.</li>
+  <li>Conv2D için 3×3 görüntü ve köşegen 2×2 çekirdek. Çıkış {6, 8, 12, 14}.</li>
+  <li>Merkezi sonlu fark, epsilon 1e-3. Linear, aktivasyon, Sequential, Conv1D/2D/3D, havuz, LayerNorm, BatchNorm, GroupNorm, InstanceNorm, RNN, LSTM, GRU, attention, encoder, residual.</li>
+  <li>Embedding: pad satırı sıfır, tekrar eden indeksin gradyanı 2.</li>
+  <li>state_dict yuvarlak turu ve fazla anahtarın hatası.</li>
+  <li>İkinci forward+backward’ta <code>allocation_count</code> artmaz. Dikkat: ölçümden önce dönen tensör kapsam dışına çıkmalıdır.</li>
+  <li>SIMD linear ile skalar linear, mutlak fark 2e-3 altında.</li>
+</ul>
+<p>ReLU ailesinde x = 0 noktası sonlu farka girmez. Orada fonksiyonun türevi yoktur; analitik alttürev 0’dır. Sayısal fark 0.5 verir ve bu bir kütüphane hatası değildir.</p>
+<p>LibTorch bu depoya bağlı değildir. Referans, elle kurulan küçük tensörler ve sonlu farktır. Tolerans lineer örnekte 1e-4 civarı, doğrusal olmayan sonlu farkta 2e-3 ile 8e-3 arasındadır. Float32 merkezi farkın kendisi bu kadar gürültülüdür.</p>
+<pre>NexusModel\build\Release\nexus_model_tests.exe
+<span class="c">// başarı: all nexus_model checks passed</span></pre>
+
+<h1><span class="num">27</span>Dosya haritası</h1>
+<table>
+  <tr><th>Yol</th><th>İçerik</th></tr>
+  <tr><td>include/nexus_model/nexus_model.hpp</td><td>Tek include</td></tr>
+  <tr><td>core/tensor.hpp</td><td>Hizalı tensör</td></tr>
+  <tr><td>core/parameter.hpp</td><td>data, grad, requires_grad</td></tr>
+  <tr><td>core/module.hpp</td><td>Katman tabanı, ağaç, mod</td></tr>
+  <tr><td>core/initializer.hpp</td><td>Kaiming, Xavier, orthogonal</td></tr>
+  <tr><td>core/serialization.hpp</td><td>NXM1</td></tr>
+  <tr><td>core/micro_tape.hpp</td><td>Attention teypi</td></tr>
+  <tr><td>core/kernels.hpp</td><td>Çalışma zamanı çekirdek tablosu, conv/pool/norm bildirimleri</td></tr>
+  <tr><td>core/error.hpp</td><td>ModelError</td></tr>
+  <tr><td>core/details.txt</td><td>Autograd kararı</td></tr>
+  <tr><td>layers/*.hpp</td><td>Katmanlar, başlık-only</td></tr>
+  <tr><td>activations/activations.hpp</td><td>Eleman bazlı aktivasyon</td></tr>
+  <tr><td>containers/</td><td>Sequential, ModuleList, ModuleDict</td></tr>
+  <tr><td>simd/</td><td>CPUID ve AVX bildirimleri</td></tr>
+  <tr><td>cuda/</td><td>Fused cihaz çekirdeği başlıkları</td></tr>
+  <tr><td>bridge/matrixflash.hpp</td><td>İsteğe bağlı GPU GEMM</td></tr>
+  <tr><td>adapters/nexus_optim.hpp</td><td>Parameter* → ParamGroup</td></tr>
+  <tr><td>src/core/scalar_kernels.cpp</td><td>Referans gövdeler</td></tr>
+  <tr><td>src/core/convolution.cpp, normalization.cpp, pooling.cpp, embedding.cpp, dropout.cpp</td><td>im2col, norm, pool, embedding</td></tr>
+  <tr><td>src/simd/avx2/</td><td>gemm.hpp, linear.cpp, normalization.cpp, details.txt</td></tr><tr><td>src/simd/</td><td>AVX2, AVX-512, atomik dağıtım</td></tr>
+  <tr><td>src/cuda/</td><td>.cu dosyaları, varsayılan kapalı</td></tr>
+  <tr><td>tests/test_model.cpp</td><td>Doğruluk</td></tr>
+  <tr><td>benchmarks/bench_suite.cpp</td><td>Süre</td></tr>
+  <tr><td>examples/train_end_to_end_example.cpp</td><td>Dört kütüphane birlikte</td></tr>
+  <tr><td>CMakeLists.txt</td><td>Seçenekler</td></tr>
+</table>
+<p>Katman başlıkları kütüphaneye ayrıca derlenmez. Onları include ettiğiniz çeviri birimi, <code>nexus_model</code> kütüphanesindeki çekirdek sembollerine bağlanır. Bu yüzden her uygulama <code>target_link_libraries(... nexus_model)</code> demelidir.</p>
+
+<h1><span class="num">28</span>Sınırlar ve hata mesajları</h1>
+<ul>
+  <li>Hesap float32’dir. FP16 ana kopya bu kütüphanede tutulmaz. Dar tip, NexusOptim’in master-copy sözleşmesine bırakılmıştır.</li>
+  <li>Bir modül örneği eşzamanlı forward için güvenli değildir.</li>
+  <li>Decoder, bellek gradyanını dönüş değerine eklemez.</li>
+  <li>RNN ailesi çift yönlü değildir ve gizli durumu çağrıdan çağıra taşımaz.</li>
+  <li>ModuleList ve ModuleDict kendi başına forward çalıştırmaz.</li>
+  <li>Conv3D çekirdek, stride, pad ve dilation için tek bir sayı alır; eksenler aynıdır.</li>
+  <li>PositionalEncoding öğrenilen tabloyu, kurucudaki uzunluğun ötesine büyütmez.</li>
+  <li>ResidualBlock çıkış eleman sayısını denetlemez.</li>
+</ul>
+<table>
+  <tr><th>ModelError</th><th>Ne zaman</th></tr>
+  <tr><td>Linear input last dimension must equal in_features</td><td>Son boyut yanlış</td></tr>
+  <tr><td>conv input rank mismatch / conv channel mismatch</td><td>NCHW düzeni bozuk</td></tr>
+  <tr><td>conv output spatial size is empty</td><td>Çekirdek, pad ve stride çıkışı yok ediyor</td></tr>
+  <tr><td>LayerNorm last dimension mismatch</td><td>normalized_size son boyuta eşit değil</td></tr>
+  <tr><td>embed must be divisible by num_heads</td><td>Kafa bölünmüyor</td></tr>
+  <tr><td>attention expects [B, T, E]</td><td>Rank 3 değil</td></tr>
+  <tr><td>causal attention requires equal query and key lengths</td><td>Nedensel maske kare değil</td></tr>
+  <tr><td>TransformerDecoderLayer requires forward(target, memory)</td><td>Bellek hiç verilmemiş</td></tr>
+  <tr><td>unexpected state_dict key / missing state_dict key</td><td>strict yükleme</td></tr>
+  <tr><td>state_dict shape mismatch for …</td><td>Aynı isim, farklı şekil</td></tr>
+  <tr><td>state file magic mismatch</td><td>Dosya NXM1 değil</td></tr>
+  <tr><td>ModuleDict has no implicit forward</td><td>Sözlük kendi başına çalıştırıldı</td></tr>
+  <tr><td>reshape numel mismatch</td><td>−1 ile bile eleman sayısı tutmuyor</td></tr>
+</table>
+<div class="ok"><strong>Sessiz öğrenememe</strong>
+Yanlış backward, derlenir ve loss düşmeden durur. Şüphede <code>tests/test_model.cpp</code> içindeki sonlu fark düzenini kendi katmanınıza kopyalayın: parametreyi ±ε oynatın, kaybın veya çıkış toplamının farkını 2ε’a bölün, analitik gradyanla karşılaştırın. Linear gibi kapalı formlar 1e-4’e iner. Tanh, GELU ve LSTM için 1e-3 ile birkaç binde tolerans bekleyin.</div>
+<p class="small">Bu kılavuz NexusModel kaynak ağacındaki imzalarla yazıldı. Taslak sözde koddaki <code>MatrixFlash::Tensor</code>, <code>dataset.shuffle()</code> ve toplu <code>CrossEntropyLoss(prediction, labels)</code> bu depoda yoktur.</p>
+
+</body>
+</html>

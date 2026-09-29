@@ -1,0 +1,45 @@
+=== AMAÇ ===
+NexusModel'in omurgası: tensör deposu, öğrenilebilir parametre, modül ağacı,
+başlatma, serileştirme ve katman-lokal mikro-teyp.
+
+=== AUTOGRAD KARARI (YOL B) ===
+MatrixFlash Pro'da ters-mod autograd vardır: matrix_pro::Variable (rank-2) ve
+sınırlı matrix_pro::VarTensor. Variable::backward() kök gradyanı birlerle
+doldurur; NexusLoss'un ürettiği dış dL/dy vektörünü enjekte edemez. NexusLoss
+std::span/std::vector, NexusData NDArray, NexusOptim ise ödünç float* kullanır.
+Bu üçü aynı teybi paylaşmaz.
+
+Bu yüzden Yol A (katmanlar yalnızca forward yazar, global teyp türev alır)
+seçilmedi. NexusModel:
+
+1. Sıcak katmanlarda (Linear, Conv, Pool, Norm, Dropout, Embedding, RNN/LSTM/GRU,
+   aktivasyon) analitik backward kullanır. Bu hem hızlıdır hem de gradyanı
+   doğrudan Parameter::grad içine biriktirir.
+2. Yalnızca attention'ın softmax∘matmul çekirdeği için katman-lokal MicroTape
+   tutar. Teyp bir katmanın forward'ı kadar yaşar; global bir autograd motoru
+   değildir. LSTM/GRU analitik BPTT'dir, teybe yazılmaz.
+
+CPU matmul MatrixFlash'te yoktur (multiply cihaz/CUDA). NexusModel bu yüzden
+kendi AVX2/AVX-512 GEMM'ini çalıştırır. GPU GEMM'i yeniden yazılmaz; istenirse
+NEXUS_MODEL_WITH_MATRIXFLASH ile MatrixFlash'in cuBLAS multiply yoluna bırakılır.
+
+=== İÇERİK ===
+- tensor.hpp: 64-bayt hizalı, paylaşımlı depolama. resize aynı şekilde ve tek
+  sahiplikte yeniden ayırmaz.
+- parameter.hpp: data + grad + requires_grad. zero_grad her adım başında.
+- module.hpp: forward/backward, parameters, train/eval, state_dict.
+- initializer.hpp: zeros/ones/uniform/normal, Xavier, Kaiming (varsayılan), orthogonal.
+- serialization.hpp: NXM1 ikili biçim (isim, rank, uint64 boyutlar, float32).
+- micro_tape.hpp: Matmul, MatmulBt, Scale, Add, Mul, AddMatrix, Softmax.
+- kernels.hpp: SIMD tablosu ve yapısal çekirdekler (conv, pool, norm).
+
+=== SICAK YOL ===
+forward/backward, şekil sabitken ve dönen tensörün başlığı düştükten sonra
+AlignedStorage ayırmaz. Dönüş değeri depolamayı paylaşır; çağıran onu canlı
+tutarsa bir sonraki çağrı yeni tampon alır. Aynı modül nesnesi eşzamanlı
+forward için güvenli değildir. Replika gradyanı accumulate_grad_locked ile,
+adım dışında birleşir.
+
+=== HESAP ===
+Tüm öğrenilen değerler float32'dir. FP16/BF16 ana kopya deseni bu depoda yer
+tutmaz; dar tip NexusOptim'in master-copy sözleşmesine bırakılmıştır.

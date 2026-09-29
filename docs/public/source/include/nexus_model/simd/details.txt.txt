@@ -1,0 +1,14 @@
+=== AMAÇ ===
+Çalışma zamanında ISA seçimi. AVX-512F (OS XCR0 ile) varsa dot/ReLU
+oraya gider. Linear AVX-512 girişinden de bloklu AVX2 GEMM kullanır.
+AVX2 ve FMA yoksa skalar gövdeye düşer. OS durum kontrolü tüm x86
+derleyicilerinde yapılır. Değişmeyen tablolar atomik işaretçiyle seçilir.
+
+=== İÇERİK ===
+- simd_dispatch.hpp: set_force_scalar. Algılama src/simd/simd_dispatch.cpp.
+- kernel_decls.hpp: skalar, AVX2 ve AVX-512 bildirimleri.
+- avx2_activation_kernels.hpp / avx512_activation_kernels.hpp: aynı bildirimler.
+  Gövdeler src/simd altındadır. AVX2 exp, Cephes tarzıdır.
+
+Matris motoru: src/simd/avx2/linear.cpp ve gemm.hpp.
+Sayısal kararlar ve bellek düzeni: src/simd/avx2/details.txt.

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\muham\Desktop\Nexus\lib\NexusModel\build-cuda\CMakeFiles\fe0add4586051ae83d9d3fd57ab4039d\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{AA265D55-D98F-3BC4-BE5D-B11C9413B8E1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

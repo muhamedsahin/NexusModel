@@ -1,0 +1,5 @@
+operation,median_ms,p95_nearest_rank_ms
+linear_forward_128_512_512,2.69131,2.9514
+linear_backward_128_512_512,6.66041,8.07074
+softmax_128_512,0.05755,0.07592
+layernorm_128_512,0.14435,0.1713
