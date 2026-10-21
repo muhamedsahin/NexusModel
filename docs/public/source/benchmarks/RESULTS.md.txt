@@ -1,5 +1,9 @@
 # NexusModel CPU benchmark report
 
+Bu yazılım ekosistemi Bursa Teknik Üniversitesi Bilgisayar Mühendisliği 1. sınıf öğrencisi Muhammed Fatih Şahin tarafından yapay zeka destekli olarak geliştirilmiştir.
+
+**21 Ekim 2026 akşamı, bu makine (AMD Ryzen 7 5800H).** Aşağıdaki tablolar 29 Eylül 2026 tek iş parçacıklı çalışmadır. Dünya sıralaması yoktur. Rakip protokolünde GEMM çekirdeği `avx2-4x16` olarak kaldı. N=2048 için Nexus 330, 362 ve 369; TensorFlow 389. Birim o protokolün GFLOPS sütunudur. CPU Conv2d aynı protokolde PyTorch’un 31.6 GFLOPS değerinin gerisinde kaldı; Nexus o akşam yaklaşık 4.9 ile 6.8 GFLOPS arasındaydı. Depthwise AVX, o akşamki sütunda PyTorch 4.93 ve TensorFlow 0.688 değerlerinin önündeydi. AVX-512 Ryzen 7 5800H üzerinde seçilmez. Bu GFLOPS sütunu aşağıdaki milisaniye tablolarının üzerine yazılmaz. Ham günlükler `benchmarks/results/` altındadır.
+
 Measured: 2026-09-29T19:13:14.340268+00:00
 
 AMD Ryzen 7 5800H with Radeon Graphics · Windows-11-10.0.26200-SP0 · MSVC 19.44.34823.2 / Release /O2
@@ -31,13 +35,13 @@ Baseline rebuilt from the archived, digest-verified source snapshot. Same native
 | ReLU 1,048,576 | 0.238820 | 1.387470 | 0.311280 | NexusModel |
 | ReLU 4,194,304 | 2.198630 | 5.541180 | 2.312790 | NexusModel |
 
-NexusModel recorded the lowest median in 7/9 measured workloads. This is a local observation, not a universal ranking or a statistical significance claim.
+In this 2026-09-29 table, NexusModel recorded the lowest median in 7 of the 9 workloads. That sentence describes only this single-thread table. It does not replace the 2026-10-21 competitor protocol at the top of this file, and it is not a world ranking.
 
 Versions: NumPy 2.3.5; PyTorch 2.14.0+cpu.
 
 ## Full CPU modules
 
-Current medians from 20 warmups and 30×5 calls (one round). Linear/Conv/MHA include forward and backward; ReLU forward only. These use the full module API with saved inputs. No valid pre-change module baseline was recorded.
+Medians from this 2026-09-29 module harness: 20 warmups and 30×5 calls (one round). Linear/Conv/MHA include forward and backward; ReLU forward only. These use the full module API with saved inputs. The Conv2D row is a millisecond on that harness. It is not the 2026-10-21 competitor-protocol GFLOPS column, where CPU Conv2d was behind PyTorch at 31.6 GFLOPS and Nexus was about 4.9 to 6.8 GFLOPS. No valid pre-change module baseline was recorded.
 
 | Module | Shape | Median ms |
 |---|---|---:|
@@ -56,7 +60,7 @@ Current medians from 20 warmups and 30×5 calls (one round). Linear/Conv/MHA inc
 - NexusModel uses C++ calls; NumPy/PyTorch use Python APIs. Tiny-case timings include unequal dispatch overhead.
 - Preallocated outputs and warm caches; deterministic periodic benchmark inputs. Weight packing is timed. This is not full training or model throughput.
 - OS scheduling, affinity, thermals and power are uncontrolled. Close results can reverse between runs.
-- GPU numbers are historical and are not refreshed or mixed with current CPU comparisons.
+- GPU numbers are historical and are not refreshed or mixed into the 2026-09-29 CPU tables or the 2026-10-21 GFLOPS column.
 
 ## Reproduce and raw evidence
 

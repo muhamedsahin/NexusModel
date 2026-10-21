@@ -11,9 +11,12 @@
  * parametre gradyanı `zero_grad` ile temizlenir (PyTorch sözleşmesi).
  */
 
+#include "nexus_model/core/execution_policy.hpp"
 #include "nexus_model/core/initializer.hpp"
 #include "nexus_model/core/kernels.hpp"
 #include "nexus_model/core/module.hpp"
+
+#include <vector>
 
 namespace nexus_model {
 
@@ -41,8 +44,34 @@ class Linear : public Module {
     dims[input.rank() - 1] = out_features_;
     output_.resize_dims(dims, input.rank());
     const int rows = static_cast<int>(input.numel() / in_features_);
-    kernels::linear_forward(input_.data(), weight_->data.data(), bias_ ? bias_->data.data() : nullptr, output_.data(),
-                            rows, static_cast<int>(in_features_), static_cast<int>(out_features_));
+    const int in_f = static_cast<int>(in_features_);
+    const int out_f = static_cast<int>(out_features_);
+    PackedGemmFn gemm = packed_gemm();
+    if (matmul_policy() == MatmulPolicy::Hybrid && gemm != nullptr && rows >= 32 && in_f >= 32 && out_f >= 32) {
+      // Y = X W^T. W is [out, in]; the packed product wants W^T as [in, out].
+      packed_weight_.resize(static_cast<std::size_t>(in_f) * static_cast<std::size_t>(out_f));
+      float* weight_t = packed_weight_.data();
+      const float* weight = weight_->data.data();
+      for (int row = 0; row < out_f; ++row) {
+        for (int col = 0; col < in_f; ++col) {
+          weight_t[static_cast<std::size_t>(col) * static_cast<std::size_t>(out_f) + static_cast<std::size_t>(row)] =
+              weight[static_cast<std::size_t>(row) * static_cast<std::size_t>(in_f) + static_cast<std::size_t>(col)];
+        }
+      }
+      gemm(input_.data(), in_f, weight_t, out_f, output_.data(), out_f, rows, out_f, in_f);
+      if (bias_) {
+        const float* bias = bias_->data.data();
+        for (int row = 0; row < rows; ++row) {
+          float* y = output_.data() + static_cast<std::size_t>(row) * static_cast<std::size_t>(out_f);
+          for (int col = 0; col < out_f; ++col) {
+            y[col] += bias[col];
+          }
+        }
+      }
+    } else {
+      kernels::linear_forward(input_.data(), weight_->data.data(), bias_ ? bias_->data.data() : nullptr, output_.data(),
+                              rows, in_f, out_f);
+    }
     return output_;
   }
 
@@ -66,6 +95,7 @@ class Linear : public Module {
   std::shared_ptr<Parameter> weight_;
   std::shared_ptr<Parameter> bias_;
   Tensor input_, output_, grad_input_;
+  mutable std::vector<float> packed_weight_;
 };
 
 }  // namespace nexus_model

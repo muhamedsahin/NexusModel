@@ -59,12 +59,10 @@ class MicroTape {
     const int inner = static_cast<int>(left.size(2));
     const int cols = static_cast<int>(right.size(2));
     const int id = blank_like_rank3(batch, rows, cols);
-    std::size_t scratch_dims[2] = {static_cast<std::size_t>(cols), static_cast<std::size_t>(inner)};
-    scratch_.resize_dims(scratch_dims, 2);
     for (int n = 0; n < batch; ++n) {
-      transpose_kn(right.data() + static_cast<std::size_t>(n) * inner * cols, scratch_.data(), inner, cols);
-      kernels::linear_forward(left.data() + static_cast<std::size_t>(n) * rows * inner, scratch_.data(), nullptr,
-                              slots_[id].value.data() + static_cast<std::size_t>(n) * rows * cols, rows, inner, cols);
+      kernels::gemm_nn(left.data() + static_cast<std::size_t>(n) * rows * inner,
+                       right.data() + static_cast<std::size_t>(n) * inner * cols,
+                       slots_[id].value.data() + static_cast<std::size_t>(n) * rows * cols, rows, inner, cols);
     }
     ops_.push_back(Op{Op::Matmul, id, a, b, 0.f, batch, rows, inner, cols, {}});
     return id;
@@ -166,12 +164,6 @@ class MicroTape {
     return used_ - 1;
   }
 
-  static void transpose_kn(const float* src, float* dst, int rows, int cols) {
-    for (int r = 0; r < rows; ++r) {
-      for (int c = 0; c < cols; ++c) dst[static_cast<std::size_t>(c) * rows + r] = src[static_cast<std::size_t>(r) * cols + c];
-    }
-  }
-
   void apply(const Op& op) {
     const float* dy = slots_[op.out].grad.data();
     if (op.kind == Op::Scale) {
@@ -212,21 +204,12 @@ class MicroTape {
       const int rows = op.p1;
       const int inner = op.p2;
       const int cols = op.p3;
-      const std::size_t bt_dims[2] = {static_cast<std::size_t>(cols), static_cast<std::size_t>(inner)};
-      scratch_.resize_dims(bt_dims, 2);
-      const std::size_t dbt_dims[2] = {static_cast<std::size_t>(cols), static_cast<std::size_t>(inner)};
-      scratch_grad_.resize_dims(dbt_dims, 2);
       for (int n = 0; n < batch; ++n) {
-        transpose_kn(slots_[op.b].value.data() + static_cast<std::size_t>(n) * inner * cols, scratch_.data(), inner, cols);
-        scratch_grad_.zero();
-        kernels::linear_backward(slots_[op.a].value.data() + static_cast<std::size_t>(n) * rows * inner, scratch_.data(),
-                                 dy + static_cast<std::size_t>(n) * rows * cols,
-                                 slots_[op.a].grad.data() + static_cast<std::size_t>(n) * rows * inner, scratch_grad_.data(),
-                                 nullptr, rows, inner, cols);
-        float* db = slots_[op.b].grad.data() + static_cast<std::size_t>(n) * inner * cols;
-        for (int r = 0; r < inner; ++r) {
-          for (int c = 0; c < cols; ++c) db[static_cast<std::size_t>(r) * cols + c] += scratch_grad_[static_cast<std::size_t>(c) * inner + r];
-        }
+        const float* a = slots_[op.a].value.data() + static_cast<std::size_t>(n) * rows * inner;
+        const float* b = slots_[op.b].value.data() + static_cast<std::size_t>(n) * inner * cols;
+        const float* g = dy + static_cast<std::size_t>(n) * rows * cols;
+        kernels::gemm_nt_accum(g, b, slots_[op.a].grad.data() + static_cast<std::size_t>(n) * rows * inner, rows, cols, inner);
+        kernels::gemm_tn_accum(a, g, slots_[op.b].grad.data() + static_cast<std::size_t>(n) * inner * cols, inner, rows, cols);
       }
     }
   }

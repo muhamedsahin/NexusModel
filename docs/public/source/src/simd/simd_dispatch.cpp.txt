@@ -96,14 +96,20 @@ KernelTable build(bool force_scalar) {
   t.sigmoid = avx2::sigmoid;
   t.sigmoid_bwd = avx2::sigmoid_bwd;
   t.tanh_fwd = avx2::tanh_fwd;
+  t.gelu = avx2::gelu;
+  t.gelu_bwd = avx2::gelu_bwd;
   t.gelu_tanh = avx2::gelu_tanh;
   t.gelu_tanh_bwd = avx2::gelu_tanh_bwd;
   t.silu = avx2::silu;
   t.silu_bwd = avx2::silu_bwd;
   t.softmax = avx2::softmax;
+  t.softmax_bwd = avx2::softmax_bwd;
+  t.log_softmax = avx2::log_softmax;
+  t.log_softmax_bwd = avx2::log_softmax_bwd;
   t.linear_forward = avx2::linear_forward;
   t.linear_backward = avx2::linear_backward;
   t.layernorm = avx2::layernorm;
+  t.layernorm_bwd = avx2::layernorm_bwd;
 #if defined(NEXUS_MODEL_ENABLE_AVX512)
   if (os_supports_avx512() && cpu_feature(7, 0, 1, 16)) {
     t.relu = avx512::relu;

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 
 namespace nexus_model::kernels {
 void embedding_forward(const float* table, const float* indices, float* y, int rows, int dim, int vocab,
@@ -17,7 +18,7 @@ void embedding_forward(const float* table, const float* indices, float* y, int r
     }
     if (idx < 0 || idx >= vocab) throw ModelError("embedding index out of range");
     const float* src = table + static_cast<std::size_t>(idx) * dim;
-    std::copy(src, src + dim, dst);
+    std::memcpy(dst, src, static_cast<std::size_t>(dim) * sizeof(float));
   }
 }
 
