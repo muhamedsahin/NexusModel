@@ -1,5 +1,9 @@
 # Benchmark
 
+> **21 Ekim 2026 notu.** Bu dosya tarihsel bir gündür; aşağıdaki sayılar yerinde bırakıldı. Ryzen 7 5800H üzerinde AVX-512 seçilmez. Aynı makinenin 21 Ekim 2026 akşam protokolü `benchmarks/RESULTS.md` başındaki nottadır: GEMM çekirdeği `avx2-4x16`, N=2048 Nexus 330/362/369 ve TensorFlow 389 GFLOPS; CPU Conv2d PyTorch 31.6 GFLOPS gerisinde, Nexus yaklaşık 4.9–6.8 GFLOPS; Depthwise AVX o sütunda PyTorch 4.93 ve TensorFlow 0.688 önünde. Bu oranlar ham günlüğün üzerine yazılmaz.
+>
+> Bu yazılım ekosistemi Bursa Teknik Üniversitesi Bilgisayar Mühendisliği 1. sınıf öğrencisi Muhammed Fatih Şahin tarafından yapay zeka destekli olarak geliştirilmiştir.
+
 CPU: Release, MSVC 19.44, `/O2`, AVX2/AVX-512. GPU: NVIDIA GeForce RTX 3070 Laptop GPU, CUDA 13.4, `sm_86`. GPU süreleri `cudaEvent` ile ölçülür; aktarım (H2D/D2H) dahil değildir. Çekirdek zaten cihazda duruyormuş gibi sayılır.
 
 ## CPU katmanları

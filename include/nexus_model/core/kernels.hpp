@@ -92,6 +92,13 @@ inline void log_softmax(const float* x, float* y, int rows, int cols) { cpu().lo
 inline void log_softmax_bwd(const float* y, const float* dy, float* dx, int rows, int cols) {
   cpu().log_softmax_bwd(y, dy, dx, rows, cols);
 }
+/// C = A @ B. A is [m,k], B is [k,n], C is [m,n]. C is overwritten.
+void gemm_nn(const float* a, const float* b, float* c, int m, int k, int n);
+/// C += A^T @ B. A is [m,k], B is [m,n], C is [k,n].
+void gemm_tn_accum(const float* a, const float* b, float* c, int k, int m, int n);
+/// C += A @ B^T. A is [m,n], B is [k,n], C is [m,k].
+void gemm_nt_accum(const float* a, const float* b, float* c, int m, int n, int k);
+
 inline void linear_forward(const float* x, const float* w, const float* bias, float* y, int rows, int in_f, int out_f) {
   cpu().linear_forward(x, w, bias, y, rows, in_f, out_f);
 }
@@ -109,6 +116,12 @@ inline void layernorm_bwd(const float* x, const float* gamma, const float* mean,
 }
 
 // --- her zaman skaler, tek geçişli yapısal çekirdekler (conv / norm / rnn) ---
+
+bool pool_aligned(const float* x, float* y, int* index, int n, int c, int h, int w, int kernel, bool is_max);
+
+float contiguous_sum(const float* data, int n);
+void contiguous_affine(const float* x, float* y, int n, float mean, float scale, float shift);
+void fill_dropout_mask(float* mask, std::size_t n, float probability, std::uint64_t seed);
 
 void batch_norm(const float* x, const float* gamma, const float* beta, float* y, float* save_mean, float* save_rstd,
                 float* running_mean, float* running_var, int outer, int channels, int inner, float eps, float momentum,
@@ -139,6 +152,12 @@ struct ConvDesc {
 int conv_out_size(int input, int pad, int dilation, int kernel, int stride);
 std::size_t conv_col_size(const ConvDesc& d);
 void conv_forward(const float* x, const float* w, const float* bias, float* y, float* col, const ConvDesc& d);
+
+/// 3x3, stride 1, dilation 1 ve depthwise ya da kucuk Cin icin dogrudan cekirdek.
+/// Uygulanamazsa false doner; cagiran im2col yoluna duser.
+bool try_direct_conv2d_forward(const float* x, const float* w, const float* bias, float* y, const ConvDesc& d);
+bool try_direct_conv2d_backward(const float* x, const float* w, const float* dy, float* dx, float* dw, float* db,
+                                const ConvDesc& d);
 void conv_backward(const float* x, const float* w, const float* dy, float* dx, float* dw, float* db, float* col,
                    const ConvDesc& d);
 

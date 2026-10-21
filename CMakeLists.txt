@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 
+# Ayni yapida ikinci kez add_subdirectory edilirse hedefler yeniden tanimlanmaz.
+if(TARGET nexus_model)
+    return()
+endif()
+
 project(NexusModel
   VERSION 1.0.0
   DESCRIPTION "Neural network layers, forward and explicit backward, for the Nexus stack"
@@ -27,6 +32,7 @@ endif()
 
 set(NEXUS_MODEL_SOURCES
   src/core/scalar_kernels.cpp
+  src/core/execution_policy.cpp
   src/core/convolution.cpp
   src/core/normalization.cpp
   src/core/pooling.cpp
@@ -36,6 +42,7 @@ set(NEXUS_MODEL_SOURCES
   src/simd/avx2_kernels.cpp
   src/simd/avx2/linear.cpp
   src/simd/avx2/normalization.cpp
+  src/simd/avx2/direct_conv.cpp
 )
 
 if(NEXUS_MODEL_ENABLE_AVX512)
@@ -80,7 +87,7 @@ if(MSVC)
   if(NEXUS_MODEL_WARNINGS_AS_ERRORS)
     target_compile_options(nexus_model PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/WX>)
   endif()
-  set_source_files_properties(src/simd/avx2_kernels.cpp src/simd/avx2/linear.cpp src/simd/avx2/normalization.cpp PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
+  set_source_files_properties(src/simd/avx2_kernels.cpp src/simd/avx2/linear.cpp src/simd/avx2/normalization.cpp src/simd/avx2/direct_conv.cpp PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
   if(NEXUS_MODEL_ENABLE_AVX512)
     set_source_files_properties(src/simd/avx512_kernels.cpp PROPERTIES COMPILE_OPTIONS "/arch:AVX512")
   endif()
@@ -90,7 +97,7 @@ else()
   if(NEXUS_MODEL_WARNINGS_AS_ERRORS)
     target_compile_options(nexus_model PRIVATE -Werror)
   endif()
-  set_source_files_properties(src/simd/avx2_kernels.cpp src/simd/avx2/linear.cpp src/simd/avx2/normalization.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma")
+  set_source_files_properties(src/simd/avx2_kernels.cpp src/simd/avx2/linear.cpp src/simd/avx2/normalization.cpp src/simd/avx2/direct_conv.cpp PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma")
   if(NEXUS_MODEL_ENABLE_AVX512)
     set_source_files_properties(src/simd/avx512_kernels.cpp PROPERTIES COMPILE_OPTIONS "-mavx512f;-mfma")
   endif()
@@ -146,8 +153,12 @@ if(NEXUS_MODEL_BUILD_EXAMPLES)
   set(NEXUS_OPTIM_BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
   set(NEXUS_OPTIM_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
   set(NEXUS_OPTIM_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../NexusLoss ${CMAKE_BINARY_DIR}/_deps/nexusloss)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../NexusOptim ${CMAKE_BINARY_DIR}/_deps/nexusoptim)
+  if(NOT TARGET nexusloss)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../NexusLoss ${CMAKE_BINARY_DIR}/_deps/nexusloss)
+  endif()
+  if(NOT TARGET nexus_optim)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../NexusOptim ${CMAKE_BINARY_DIR}/_deps/nexusoptim)
+  endif()
   set(NEXUSDATA_BUILD_TESTS OFF CACHE BOOL "" FORCE)
   set(NEXUSDATA_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
   set(NEXUSDATA_BUILD_BENCH OFF CACHE BOOL "" FORCE)
@@ -159,7 +170,9 @@ if(NEXUS_MODEL_BUILD_EXAMPLES)
   set(NEXUSDATA_WITH_ZSTD OFF CACHE BOOL "" FORCE)
   set(NEXUSDATA_WITH_LZ4 OFF CACHE BOOL "" FORCE)
   set(NEXUSDATA_WITH_BZIP2 OFF CACHE BOOL "" FORCE)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../NexusData ${CMAKE_BINARY_DIR}/_deps/nexusdata)
+  if(NOT TARGET nexusdata)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../NexusData ${CMAKE_BINARY_DIR}/_deps/nexusdata)
+  endif()
   add_executable(train_end_to_end examples/train_end_to_end_example.cpp)
   target_link_libraries(train_end_to_end PRIVATE nexus_model nexusloss nexus_optim nexusdata)
   nexus_model_test_flags(train_end_to_end)

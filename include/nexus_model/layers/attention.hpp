@@ -19,32 +19,31 @@
 #include "nexus_model/layers/normalization.hpp"
 
 #include <cmath>
+#include <cstring>
 #include <vector>
 
 namespace nexus_model {
 namespace detail {
 
 inline void split_heads(const float* in, float* out, int batch, int time, int heads, int dim) {
+  const std::size_t bytes = static_cast<std::size_t>(dim) * sizeof(float);
   for (int b = 0; b < batch; ++b) {
     for (int t = 0; t < time; ++t) {
       for (int h = 0; h < heads; ++h) {
-        for (int d = 0; d < dim; ++d) {
-          out[(((static_cast<std::size_t>(b) * heads + h) * time + t) * dim) + d] =
-              in[(((static_cast<std::size_t>(b) * time + t) * heads + h) * dim) + d];
-        }
+        std::memcpy(out + (((static_cast<std::size_t>(b) * heads + h) * time + t) * dim),
+                    in + (((static_cast<std::size_t>(b) * time + t) * heads + h) * dim), bytes);
       }
     }
   }
 }
 
 inline void merge_heads(const float* in, float* out, int batch, int time, int heads, int dim) {
+  const std::size_t bytes = static_cast<std::size_t>(dim) * sizeof(float);
   for (int b = 0; b < batch; ++b) {
     for (int t = 0; t < time; ++t) {
       for (int h = 0; h < heads; ++h) {
-        for (int d = 0; d < dim; ++d) {
-          out[(((static_cast<std::size_t>(b) * time + t) * heads + h) * dim) + d] =
-              in[(((static_cast<std::size_t>(b) * heads + h) * time + t) * dim) + d];
-        }
+        std::memcpy(out + (((static_cast<std::size_t>(b) * time + t) * heads + h) * dim),
+                    in + (((static_cast<std::size_t>(b) * heads + h) * time + t) * dim), bytes);
       }
     }
   }

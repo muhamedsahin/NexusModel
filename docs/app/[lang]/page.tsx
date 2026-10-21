@@ -97,8 +97,8 @@ export default async function Home({
           </p>
           <p className="hero-description">
             {t(
-              "Yüksek performanslı sinir ağı katmanları, açık geri yayılım ve donanıma yakın C++ gücü. Sade bir arayüzün arkasında, tüm matematik sizin.",
-              "High-performance neural network layers, explicit backward, and C++ close to the hardware. A simple interface. All the mathematics, yours.",
+              "C++20 sinir ağı katmanları ve açık geri yayılım. Sade bir arayüz; matematik katmanın içindedir.",
+              "C++20 neural-network layers and explicit backward. A plain interface, with the mathematics inside the layer.",
             )}
           </p>
           <div className="actions">
@@ -114,7 +114,7 @@ export default async function Home({
           <div className="hero-footnote">
             <span>HOST FLOAT32</span>
             <i />
-            <span>AVX2 / AVX-512</span>
+            <span>AVX2 · 5800H</span>
             <i />
             <span>EXPLICIT BACKWARD</span>
           </div>
@@ -135,7 +135,7 @@ export default async function Home({
             {(cpuRows[1].ms / cpuRows[2].ms).toFixed(2)}<span>×</span>
           </span>
           <p>{t("SIMD / skalar hız oranı", "SIMD / scalar speed ratio")}</p>
-          <small>Linear · B32 · 256 → 256</small>
+          <small>2026-09-29 · Linear · 256</small>
         </div>
         <div>
           <span className="metric-value">
@@ -339,14 +339,14 @@ export default async function Home({
             03 / {t("ÖLÇÜLMÜŞ PERFORMANS", "MEASURED PERFORMANCE")}
           </span>
           <h2>
-            {t("Daha az bekleme.", "Less waiting.")}
+            {t("Bir iş yükü.", "One workload.")}
             <br />
-            <span>{t("Daha çok hesap.", "More computing.")}</span>
+            <span>{t("29 Eylül tablosu.", "The 29 September table.")}</span>
           </h2>
           <p>
             {t(
-              "Aynı iş yükü. Aynı boyutlar. SIMD ile skalar yolu yan yana görün. Rakamların arkasındaki koşullar her zaman açık.",
-              "Same workload. Same dimensions. Compare SIMD and scalar paths side by side. The conditions behind every number are always visible.",
+              "Çubuk, 29 Eylül 2026 tek iş parçacıklı Linear ölçümüdür. 21 Ekim 2026 akşamı bu Ryzen 7 5800H üzerinde ayrıdır. GEMM çekirdeği avx2-4x16 kaldı. N=2048 Nexus 330, 362 ve 369 GFLOPS; TensorFlow 389. CPU Conv2d, PyTorch 31.6 GFLOPS gerisindeydi. Nexus o akşam yaklaşık 4.9 ile 6.8 GFLOPS arasındaydı. Depthwise AVX, PyTorch 4.93 ve TensorFlow 0.688 önündeydi. AVX-512 bu işlemcide seçilmez. Dünya sıralaması yoktur.",
+              "The bars are the 29 September 2026 single-thread Linear measurement. The evening of 21 October 2026 on this Ryzen 7 5800H is separate. GEMM kept kernel avx2-4x16. At N=2048 Nexus recorded 330, 362, and 369 GFLOPS; TensorFlow recorded 389. CPU Conv2d was behind PyTorch at 31.6 GFLOPS. Nexus that evening was about 4.9 to 6.8 GFLOPS. Depthwise AVX was ahead of PyTorch 4.93 and TensorFlow 0.688. AVX-512 is not selected on this CPU. There is no world ranking.",
             )}
           </p>
           <Link className="button secondary" href={`/${lang}/benchmarks/`}>
@@ -379,8 +379,8 @@ export default async function Home({
           </div>
           <div className="chart-note">
             {t(
-              "Forward + backward · Release /O2 · MSVC 19.44. Kaynak: depodaki benchmark raporu.",
-              "Forward + backward · Release /O2 · MSVC 19.44. Source: repository benchmark report.",
+              "29 Eylül 2026 · forward + backward · tek iş parçacığı · Release /O2 · MSVC 19.44. 21 Ekim Conv2d GFLOPS sütunu bu grafik değildir.",
+              "29 September 2026 · forward + backward · one thread · Release /O2 · MSVC 19.44. The 21 October Conv2d GFLOPS column is not this chart.",
             )}
           </div>
         </Reveal>
@@ -467,6 +467,11 @@ export default async function Home({
               "Tensör belleğinden attention matematiğine. Tek bir satırdan, bütün mimariye.",
               "From tensor memory to attention mathematics. From a single line to the whole architecture.",
             )}
+          </p>
+          <p className="small-note">
+            Bu yazılım ekosistemi Bursa Teknik Üniversitesi Bilgisayar
+            Mühendisliği 1. sınıf öğrencisi Muhammed Fatih Şahin tarafından
+            yapay zeka destekli olarak geliştirilmiştir.
           </p>
           <Link className="button primary" href={`/${lang}/docs/introduction/`}>
             <BookOpen size={17} />

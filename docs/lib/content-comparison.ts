@@ -57,8 +57,8 @@ export const comparisonGuide: Article = {
       "limits",
       "Nasıl yorumlanmalı?",
       "How to interpret results",
-      "NexusModel C++ çağrı maliyeti, diğerlerinde Python API çağrı maliyeti dahildir. Tek makine, üç turda dönüşümlü framework sırası; sıcaklık ve OS zamanlaması kontrol edilmemiştir. Küçük boyutlarda dispatch etkisi büyür. Bu nedenle tek bir “en hızlı kütüphane” iddiası yerine işlem/şekil bazında sonucu okuyun.",
-      "NexusModel includes C++ call overhead; the others include Python API dispatch. One machine, three rotated framework rounds, uncontrolled temperature and OS scheduling. Dispatch matters more for small workloads. Interpret by operation and shape rather than declaring one library universally fastest.",
+      "Bu sayfa 29 Eylül 2026, tek iş parçacığı, küçük GEMM ve ReLU ölçümüdür. NexusModel C++ çağrı maliyeti, diğerlerinde Python API çağrı maliyeti dahildir. Dokuz iş yükünün yedisinde düşük medyan yalnız bu tabloya aittir. 21 Ekim 2026 akşamı ayrıdır: GEMM avx2-4x16, N=2048 Nexus 330/362/369 GFLOPS, TensorFlow 389. CPU Conv2d PyTorch 31.6 GFLOPS gerisindeydi; Nexus yaklaşık 4.9–6.8 GFLOPS. Depthwise AVX, PyTorch 4.93 ve TensorFlow 0.688 önündeydi. AVX-512 Ryzen 7 5800H üzerinde seçilmez. Dünya sıralaması yoktur.",
+      "This page is the 2026-09-29 study: one thread, small GEMM and ReLU. NexusModel includes C++ call overhead; the others include Python API dispatch. A lowest median in 7 of 9 workloads describes only this table. The evening of 2026-10-21 is separate: GEMM kept avx2-4x16, N=2048 Nexus 330/362/369 GFLOPS, TensorFlow 389. CPU Conv2d was behind PyTorch at 31.6 GFLOPS; Nexus was about 4.9 to 6.8 GFLOPS. Depthwise AVX was ahead of PyTorch 4.93 and TensorFlow 0.688. AVX-512 is not selected on the Ryzen 7 5800H. There is no world ranking.",
     ),
     s(
       "reproduce",

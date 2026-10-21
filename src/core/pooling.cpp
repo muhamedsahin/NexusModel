@@ -8,6 +8,9 @@
 namespace nexus_model::kernels {
 void max_pool2d(const float* x, float* y, int* index, int n, int c, int h, int w, int kh, int kw, int sh, int sw, int ph,
                 int pw) {
+  if (ph == 0 && pw == 0 && kh == kw && sh == sw && kh == sh && pool_aligned(x, y, index, n, c, h, w, kh, true)) {
+    return;
+  }
   const int oh = conv_out_size(h, ph, 1, kh, sh);
   const int ow = conv_out_size(w, pw, 1, kw, sw);
   for (int ni = 0; ni < n; ++ni) {
@@ -51,6 +54,10 @@ void max_pool2d_bwd(const float* dy, const int* index, float* dx, int n, int c, 
 
 void avg_pool2d(const float* x, float* y, int n, int c, int h, int w, int kh, int kw, int sh, int sw, int ph, int pw,
                 bool count_include_pad) {
+  if (count_include_pad && ph == 0 && pw == 0 && kh == kw && sh == sw && kh == sh &&
+      pool_aligned(x, y, nullptr, n, c, h, w, kh, false)) {
+    return;
+  }
   const int oh = conv_out_size(h, ph, 1, kh, sh);
   const int ow = conv_out_size(w, pw, 1, kw, sw);
   for (int ni = 0; ni < n; ++ni) {

@@ -1,6 +1,10 @@
 #include "gemm.hpp"
+#include "nexus_model/core/kernels.hpp"
 #include "nexus_model/simd/kernel_decls.hpp"
+
 #include <algorithm>
+#include <cstring>
+#include <immintrin.h>
 
 namespace nexus_model::kernels::avx2 {
 namespace internal {
@@ -125,3 +129,42 @@ void linear_backward(const float *x, const float *w, const float *dy, float *dx,
       axpy(db, dy + static_cast<std::size_t>(r) * out_f, 1.f, out_f);
 }
 } // namespace nexus_model::kernels::avx2
+
+namespace nexus_model::kernels {
+
+void gemm_nn(const float* a, const float* b, float* c, int m, int k, int n) {
+    const std::size_t count = static_cast<std::size_t>(m) * static_cast<std::size_t>(n);
+    std::memset(c, 0, count * sizeof(float));
+    avx2::internal::accumulate(a, static_cast<std::size_t>(k), 1, b, n, c, m, n, k);
+}
+
+void gemm_tn_accum(const float* a, const float* b, float* c, int k, int m, int n) {
+    avx2::internal::accumulate(a, 1, static_cast<std::size_t>(k), b, n, c, k, n, m);
+}
+
+void gemm_nt_accum(const float* a, const float* b, float* c, int m, int n, int k) {
+    for (int row = 0; row < m; ++row) {
+        float* crow = c + static_cast<std::size_t>(row) * k;
+        const float* arow = a + static_cast<std::size_t>(row) * n;
+        for (int col = 0; col < k; ++col) {
+            const float* brow = b + static_cast<std::size_t>(col) * n;
+            __m256 acc = _mm256_setzero_ps();
+            int t = 0;
+            for (; t + 8 <= n; t += 8) {
+                acc = _mm256_fmadd_ps(_mm256_loadu_ps(arow + t), _mm256_loadu_ps(brow + t), acc);
+            }
+            __m128 lo = _mm256_castps256_ps128(acc);
+            __m128 hi = _mm256_extractf128_ps(acc, 1);
+            lo = _mm_add_ps(lo, hi);
+            lo = _mm_hadd_ps(lo, lo);
+            lo = _mm_hadd_ps(lo, lo);
+            float sum = crow[col] + _mm_cvtss_f32(lo);
+            for (; t < n; ++t) {
+                sum += arow[t] * brow[t];
+            }
+            crow[col] = sum;
+        }
+    }
+}
+
+}  // namespace nexus_model::kernels

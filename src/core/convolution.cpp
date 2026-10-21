@@ -113,6 +113,9 @@ std::size_t conv_col_size(const ConvDesc& d) {
 }
 
 void conv_forward(const float* x, const float* w, const float* bias, float* y, float* col, const ConvDesc& d) {
+  if (try_direct_conv2d_forward(x, w, bias, y, d)) {
+    return;
+  }
   int in_s[3], out_s[3], ker[3], str[3], pad[3], dil[3];
   align3(d, in_s, out_s, ker, str, pad, dil);
   const int cin_g = d.c / d.groups;
@@ -138,6 +141,9 @@ void conv_forward(const float* x, const float* w, const float* bias, float* y, f
 
 void conv_backward(const float* x, const float* w, const float* dy, float* dx, float* dw, float* db, float* col,
                    const ConvDesc& d) {
+  if (try_direct_conv2d_backward(x, w, dy, dx, dw, db, d)) {
+    return;
+  }
   int in_s[3], out_s[3], ker[3], str[3], pad[3], dil[3];
   align3(d, in_s, out_s, ker, str, pad, dil);
   const int cin_g = d.c / d.groups;

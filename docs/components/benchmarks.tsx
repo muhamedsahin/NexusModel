@@ -58,10 +58,10 @@ export function Benchmarks({ lang }: { lang: Locale }) {
           {t("Rakamlar konuşsun.", "Let the numbers talk.")}
           <span className="accent">_</span>
         </h1>
-        <p>
+          <p>
           {t(
-            "Aynı iş yükü, açık koşullar. Performansın arkasındaki bütün ayrıntılar.",
-            "Same workload, transparent conditions. Every detail behind the performance.",
+            "29 Eylül 2026 tabloları tek iş parçacığıdır. 21 Ekim 2026 akşamı bu Ryzen 7 5800H üzerinde GEMM avx2-4x16 kaldı: N=2048 Nexus 330, 362 ve 369 GFLOPS, TensorFlow 389. CPU Conv2d PyTorch 31.6 GFLOPS gerisindeydi; Nexus yaklaşık 4.9–6.8 GFLOPS. Depthwise AVX, PyTorch 4.93 ve TensorFlow 0.688 önündeydi. AVX-512 seçilmez. Dünya sıralaması yoktur.",
+            "The 29 September 2026 tables are one thread. On the evening of 21 October 2026, on this Ryzen 7 5800H, GEMM kept avx2-4x16: N=2048 Nexus 330, 362, and 369 GFLOPS, TensorFlow 389. CPU Conv2d was behind PyTorch at 31.6 GFLOPS; Nexus was about 4.9 to 6.8 GFLOPS. Depthwise AVX was ahead of PyTorch 4.93 and TensorFlow 0.688. AVX-512 is not selected. There is no world ranking.",
           )}
         </p>
         <div className="bench-badges">
@@ -334,8 +334,8 @@ export function Benchmarks({ lang }: { lang: Locale }) {
             </h3>
             <p>
               {t(
-                "Kaynak: benchmarks/RESULTS.md. CPU katmanları güncel ölçümdür; GPU tablosu eski sürüm arşividir ve yeniden ölçülmedi. GPU süreleri cudaEvent ile ölçülür, H2D/D2H aktarımı ve ayırma hariçtir. Raporlanan TF32 ayarı ve sınırlı tekrar sayıları metodoloji sayfasında açıklanır. Bu sayfa canlı benchmark çalıştırmaz.",
-                "Source: benchmarks/RESULTS.md. CPU layer timings are current; the GPU table is a historical snapshot and was not remeasured. GPU timings use cudaEvent, excluding H2D/D2H transfers and allocation. Reported TF32 settings and limited repetition counts are explained in the methodology. This page does not run live benchmarks.",
+                "Kaynak: benchmarks/RESULTS.md. CPU katman milisaniyeleri 29 Eylül 2026 ölçümüdür. Conv2D satırı, 21 Ekim akşamının GFLOPS sütunu değildir; o akşam CPU Conv2d PyTorch 31.6 GFLOPS gerisindeydi ve Nexus yaklaşık 4.9–6.8 GFLOPS idi. GPU tablosu eski arşivdir. GPU süreleri cudaEvent ile ölçülür, H2D/D2H aktarımı ve ayırma hariçtir. Bu sayfa canlı benchmark çalıştırmaz.",
+                "Source: benchmarks/RESULTS.md. CPU layer milliseconds are the 29 September 2026 measurement. The Conv2D row is not the 21 October GFLOPS column; that evening CPU Conv2d was behind PyTorch at 31.6 GFLOPS and Nexus was about 4.9 to 6.8 GFLOPS. The GPU table is a historical archive. GPU timings use cudaEvent, excluding H2D/D2H transfers and allocation. This page does not run live benchmarks.",
               )}
             </p>
             <div className="actions">

@@ -32,9 +32,9 @@ npm start
 - `scripts/sync-sources.mjs`: refreshes original-source downloads during the build.
 - `app/globals.css`: responsive dark/light visual system.
 
-Both languages are stored together for each article and section. New articles are exported automatically and appear in navigation/search. Benchmark values are recorded results, not live browser measurements. GPU figures exclude host/device transfers. CPU/compiler metadata is recorded with the current measurements; GPU numbers remain an explicitly labeled historical snapshot.
+Both languages are stored together for each article and section. New articles are exported automatically and appear in navigation/search. Benchmark values are recorded results, not live browser measurements. GPU figures exclude host/device transfers. CPU/compiler metadata is recorded with the 2026-09-29 measurements. GPU numbers remain an explicitly labeled historical snapshot. The later reference for this machine is the evening of 2026-10-21 (AMD Ryzen 7 5800H): GEMM kept kernel `avx2-4x16`, N=2048 Nexus 330/362/369 GFLOPS against TensorFlow 389. CPU Conv2d on that competitor protocol was behind PyTorch at 31.6 GFLOPS; Nexus was about 4.9 to 6.8 GFLOPS. Depthwise AVX was ahead of PyTorch 4.93 and TensorFlow 0.688 on that evening column. AVX-512 is not selected on the Ryzen 7 5800H. Those figures are not a world ranking and are not mixed into the September millisecond logs.
 
-`kilavuz.html` and `NexusModel-Kullanim-Kilavuzu.pdf` include the current performance report. Regenerate using `python benchmarks/export_reports.py` then `node scripts/render-guide.mjs`.
+`docs/kullanim.md` is the usage-guide source (layers, `parameters()`, `train` / `eval`). Pandoc is not installed. `NexusModel-Kullanim-Kilavuzu.pdf` and the `public` copy were not regenerated from that markdown. `kilavuz.html` is the older HTML guide.
 
 ## Verification
 
@@ -53,7 +53,7 @@ The hero is a conceptual tensor visualization, not a profiler. The loading revea
 
 ## Cross-library comparison
 
-The benchmark page includes a separate, dated local CPU study of NexusModel, NumPy, and PyTorch. It is distinct from the repository's historical CPU/GPU report. See `benchmarks/README.md` for reproduction. The site serves recorded results and never pretends to run native benchmarks in the browser.
+The benchmark page includes a separate, dated local CPU study of NexusModel, NumPy, and PyTorch from 2026-09-29 (one compute thread, small GEMM and ReLU). A lowest median in 7 of those 9 workloads describes that table only. It does not override the 2026-10-21 evening protocol above. See `benchmarks/README.md` for reproduction. The site serves recorded results and never pretends to run native benchmarks in the browser.
 
 ## Executable documentation examples
 

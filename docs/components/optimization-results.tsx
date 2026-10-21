@@ -36,11 +36,11 @@ export function OptimizationResults({ lang }: { lang: Locale }) {
         ))}
       </div>
       <p className="subtle">{t(
-        "Float32, tek hesaplama iş parçacığı. Backward tampon sıfırlamasını içerir. Güç profili, sıcaklık ve işlemci çekirdeği sabitlenmedi. Bunlar tüm modeller için genel hız garantisi değildir.",
-        "Float32, one compute thread. Backward includes gradient buffer clearing. Power, temperature and CPU affinity were not fixed. These are not universal speed guarantees for all models.",
+        "29 Eylül 2026. Float32, tek hesaplama iş parçacığı. Backward tampon sıfırlamasını içerir. Güç profili sabitlenmedi. Bu kartlar 21 Ekim akşamının GEMM veya Conv2d GFLOPS sütunu değildir. O akşam CPU Conv2d PyTorch 31.6 GFLOPS gerisindeydi.",
+        "29 September 2026. Float32, one compute thread. Backward includes gradient buffer clearing. Power was not pinned. These cards are not the 21 October GEMM or Conv2d GFLOPS column. That evening CPU Conv2d was behind PyTorch at 31.6 GFLOPS.",
       )}</p>
       <div className="comparison-downloads">
-        <a className="button secondary compact" href="/NexusModel-Kullanim-Kilavuzu.pdf" download>{t("Güncel kılavuz · PDF", "Updated guide · PDF")}</a>
+        <a className="button secondary compact" href="/NexusModel-Kullanim-Kilavuzu.pdf" download>{t("PDF · yenilenmedi", "PDF · not regenerated")}</a>
         <a className="button secondary compact" href="/optimization-results.json" download>{t("Eski/yeni ham örnekler · JSON", "Before/after raw samples · JSON")}</a>
         <Link className="text-link" href={`/${lang}/docs/performance-engine/`}>{t("Hesap motorunun ayrıntıları →", "Compute engine details →")}</Link>
       </div>

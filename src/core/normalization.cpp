@@ -17,7 +17,7 @@ void batch_norm(const float* x, const float* gamma, const float* beta, float* y,
     if (training) {
       double sum = 0.0;
       for (int n = 0; n < outer; ++n) {
-        for (int i = 0; i < inner; ++i) sum += x[(static_cast<std::size_t>(n * channels + c) * inner) + i];
+        sum += contiguous_sum(x + (static_cast<std::size_t>(n * channels + c) * inner), inner);
       }
       mean = static_cast<float>(sum / m);
       double var_acc = 0.0;
@@ -44,10 +44,8 @@ void batch_norm(const float* x, const float* gamma, const float* beta, float* y,
     const float g = gamma != nullptr ? gamma[c] : 1.f;
     const float b = beta != nullptr ? beta[c] : 0.f;
     for (int n = 0; n < outer; ++n) {
-      for (int i = 0; i < inner; ++i) {
-        const std::size_t idx = (static_cast<std::size_t>(n * channels + c) * inner) + i;
-        y[idx] = (x[idx] - mean) * rstd * g + b;
-      }
+      const std::size_t base = (static_cast<std::size_t>(n * channels + c) * inner);
+      contiguous_affine(x + base, y + base, inner, mean, rstd * g, b);
     }
   }
 }
@@ -95,7 +93,7 @@ void group_norm(const float* x, const float* gamma, const float* beta, float* y,
       double sum = 0.0;
       for (int c = 0; c < cpg; ++c) {
         const int ch = g * cpg + c;
-        for (int i = 0; i < inner; ++i) sum += x[(static_cast<std::size_t>(ni * channels + ch) * inner) + i];
+        sum += contiguous_sum(x + (static_cast<std::size_t>(ni * channels + ch) * inner), inner);
       }
       const float mean = static_cast<float>(sum / m);
       double var_acc = 0.0;
@@ -113,10 +111,8 @@ void group_norm(const float* x, const float* gamma, const float* beta, float* y,
         const int ch = g * cpg + c;
         const float gv = gamma != nullptr ? gamma[ch] : 1.f;
         const float bv = beta != nullptr ? beta[ch] : 0.f;
-        for (int i = 0; i < inner; ++i) {
-          const std::size_t idx = (static_cast<std::size_t>(ni * channels + ch) * inner) + i;
-          y[idx] = (x[idx] - mean) * rstd * gv + bv;
-        }
+        const std::size_t base = (static_cast<std::size_t>(ni * channels + ch) * inner);
+        contiguous_affine(x + base, y + base, inner, mean, rstd * gv, bv);
       }
     }
   }

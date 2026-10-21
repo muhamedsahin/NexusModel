@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -40,6 +41,36 @@ inline void scatter_time(const float* src, float* dst, int batch, int time, int 
     const float* in = src + static_cast<std::size_t>(b) * feature;
     std::copy(in, in + feature, row);
   }
+}
+
+inline void to_time_major(const float* batch_first, float* time_first, int batch, int time, int feature) {
+  const std::size_t bytes = static_cast<std::size_t>(feature) * sizeof(float);
+  for (int t = 0; t < time; ++t) {
+    for (int b = 0; b < batch; ++b) {
+      std::memcpy(time_first + (static_cast<std::size_t>(t * batch + b) * feature),
+                  batch_first + (static_cast<std::size_t>(b * time + t) * feature), bytes);
+    }
+  }
+}
+
+inline void from_time_major(const float* time_first, float* batch_first, int batch, int time, int feature) {
+  const std::size_t bytes = static_cast<std::size_t>(feature) * sizeof(float);
+  for (int t = 0; t < time; ++t) {
+    for (int b = 0; b < batch; ++b) {
+      std::memcpy(batch_first + (static_cast<std::size_t>(b * time + t) * feature),
+                  time_first + (static_cast<std::size_t>(t * batch + b) * feature), bytes);
+    }
+  }
+}
+
+inline void copy_step(const float* time_first, float* step, int batch, int feature, int t) {
+  std::memcpy(step, time_first + static_cast<std::size_t>(t * batch) * feature,
+              static_cast<std::size_t>(batch) * feature * sizeof(float));
+}
+
+inline void store_step(const float* step, float* time_first, int batch, int feature, int t) {
+  std::memcpy(time_first + static_cast<std::size_t>(t * batch) * feature, step,
+              static_cast<std::size_t>(batch) * feature * sizeof(float));
 }
 
 inline void add_bias_block(float* bias, int hidden, int gate, float value) {
@@ -178,6 +209,9 @@ class RNN : public Module {
     dx_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(widest)});
     dh_from_hh_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(hidden_size_)});
     dh_next_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(hidden_size_)});
+    major_seq_.resize({static_cast<std::size_t>(time), static_cast<std::size_t>(batch),
+                       static_cast<std::size_t>(std::max(input_size_, hidden_size_))});
+    major_h_.resize({static_cast<std::size_t>(time), static_cast<std::size_t>(batch), static_cast<std::size_t>(hidden_size_)});
     dh_next_.zero();
   }
 
@@ -188,7 +222,7 @@ class RNN : public Module {
   int batch_cache_ = 0;
   int time_cache_ = 0;
   std::vector<Slot> layers_;
-  Tensor source_, flow_, dinput_, grad_input_;
+  Tensor source_, flow_, dinput_, grad_input_, major_seq_, major_h_;
   Tensor step_x_, step_h_, step_y_, step_dy_, pre_x_, pre_h_, pre_, dx_, dh_from_hh_, dh_next_;
 };
 
@@ -251,9 +285,11 @@ class LSTM : public Module {
           kernels::tanh_fwd(p + 2 * H, gs_.data() + static_cast<std::size_t>(b) * H, static_cast<std::size_t>(H));
           kernels::sigmoid(p + 3 * H, os_.data() + static_cast<std::size_t>(b) * H, static_cast<std::size_t>(H));
         }
-        for (int i = 0; i < n; ++i) cs_[i] = fs_[i] * cp_[i] + is_[i] * gs_[i];
+        kernels::mul(fs_.data(), cp_.data(), cs_.data(), static_cast<std::size_t>(n));
+        kernels::mul(is_.data(), gs_.data(), pre_.data(), static_cast<std::size_t>(n));
+        kernels::add(cs_.data(), pre_.data(), cs_.data(), static_cast<std::size_t>(n));
         kernels::tanh_fwd(cs_.data(), th_.data(), static_cast<std::size_t>(n));
-        for (int i = 0; i < n; ++i) hs_[i] = os_[i] * th_[i];
+        kernels::mul(os_.data(), th_.data(), hs_.data(), static_cast<std::size_t>(n));
         detail::scatter_time(is_.data(), slot.i.data(), batch, time, H, t);
         detail::scatter_time(fs_.data(), slot.f.data(), batch, time, H, t);
         detail::scatter_time(gs_.data(), slot.g.data(), batch, time, H, t);
@@ -371,12 +407,15 @@ class LSTM : public Module {
     dc_next_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(H)});
     dc_prev_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(H)});
     dh_from_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(H)});
+    major_seq_.resize({static_cast<std::size_t>(time), static_cast<std::size_t>(batch),
+                       static_cast<std::size_t>(std::max(input_size_, H))});
+    stream_.resize({6, static_cast<std::size_t>(time), static_cast<std::size_t>(batch), static_cast<std::size_t>(H)});
   }
 
   int input_size_, hidden_size_, num_layers_, truncate_;
   int batch_ = 0, time_ = 0;
   std::vector<Slot> slots_;
-  Tensor source_, flow_, dinput_, grad_input_;
+  Tensor source_, flow_, dinput_, grad_input_, major_seq_, stream_;
   Tensor x_, dx_, hp_, cp_, is_, fs_, gs_, os_, cs_, hs_, th_;
   Tensor pre_x_, pre_h_, pre_, dh_next_, dc_next_, dc_prev_, dh_from_;
 };
@@ -438,9 +477,10 @@ class GRU : public Module {
           const int b = i / H;
           const int h = i % H;
           const float nx = pre_x_[static_cast<std::size_t>(b) * 3 * H + 2 * H + h];
-          ns_[i] = std::tanh(nx + rs_[i] * hn_[i]);
-          hs_[i] = (1.f - zs_[i]) * ns_[i] + zs_[i] * hp_[i];
+          ns_[i] = nx + rs_[i] * hn_[i];
         }
+        kernels::tanh_fwd(ns_.data(), ns_.data(), static_cast<std::size_t>(n));
+        for (int i = 0; i < n; ++i) hs_[i] = (1.f - zs_[i]) * ns_[i] + zs_[i] * hp_[i];
         detail::scatter_time(rs_.data(), slot.r.data(), batch, time, H, t);
         detail::scatter_time(zs_.data(), slot.z.data(), batch, time, H, t);
         detail::scatter_time(ns_.data(), slot.n.data(), batch, time, H, t);
@@ -548,12 +588,14 @@ class GRU : public Module {
     pre_h_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(3 * H)});
     dh_next_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(H)});
     dh_from_.resize({static_cast<std::size_t>(batch), static_cast<std::size_t>(H)});
+    major_seq_.resize({static_cast<std::size_t>(time), static_cast<std::size_t>(batch), static_cast<std::size_t>(wide)});
+    stream_.resize({5, static_cast<std::size_t>(time), static_cast<std::size_t>(batch), static_cast<std::size_t>(H)});
   }
 
   int input_size_, hidden_size_, num_layers_, truncate_;
   int batch_ = 0, time_ = 0;
   std::vector<Slot> slots_;
-  Tensor source_, flow_, dinput_, grad_input_;
+  Tensor source_, flow_, dinput_, grad_input_, major_seq_, stream_;
   Tensor x_, dx_, hp_, rs_, zs_, ns_, hn_, hs_, pre_x_, pre_h_, dh_next_, dh_from_;
 };
 

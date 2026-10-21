@@ -40,6 +40,7 @@ class Flatten : public Module {
 class Reshape : public Module {
  public:
   explicit Reshape(std::initializer_list<std::size_t> shape) : shape_(shape) {}
+  explicit Reshape(std::vector<std::size_t> shape) : shape_(std::move(shape)) {}
 
   Tensor forward(const Tensor& input) override {
     cached_rank_ = input.rank();

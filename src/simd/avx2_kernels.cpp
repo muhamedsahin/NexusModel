@@ -250,4 +250,239 @@ void softmax(const float* x, float* y, int rows, int cols) {
   }
 }
 
+float erf_approx(float x) {
+  const float sign = x < 0.f ? -1.f : 1.f;
+  const float ax = std::fabs(x);
+  const float t = 1.f / (1.f + 0.3275911f * ax);
+  const float poly = (((((1.061405429f * t - 1.453152027f) * t) + 1.421413741f) * t - 0.284496736f) * t + 0.254829592f) * t;
+  return sign * (1.f - poly * std::exp(-ax * ax));
+}
+
+__m256 erf_ps(__m256 x) {
+  const __m256 sign_mask = _mm256_set1_ps(-0.0f);
+  const __m256 sign = _mm256_or_ps(_mm256_and_ps(x, sign_mask), _mm256_set1_ps(1.0f));
+  const __m256 ax = _mm256_andnot_ps(sign_mask, x);
+  const __m256 t = _mm256_div_ps(_mm256_set1_ps(1.0f), _mm256_fmadd_ps(_mm256_set1_ps(0.3275911f), ax, _mm256_set1_ps(1.0f)));
+  __m256 poly = _mm256_fmadd_ps(_mm256_set1_ps(1.061405429f), t, _mm256_set1_ps(-1.453152027f));
+  poly = _mm256_fmadd_ps(poly, t, _mm256_set1_ps(1.421413741f));
+  poly = _mm256_fmadd_ps(poly, t, _mm256_set1_ps(-0.284496736f));
+  poly = _mm256_fmadd_ps(poly, t, _mm256_set1_ps(0.254829592f));
+  poly = _mm256_mul_ps(poly, t);
+  const __m256 e = exp256(_mm256_sub_ps(_mm256_setzero_ps(), _mm256_mul_ps(ax, ax)));
+  return _mm256_mul_ps(sign, _mm256_sub_ps(_mm256_set1_ps(1.0f), _mm256_mul_ps(poly, e)));
+}
+
+void gelu(const float* x, float* y, std::size_t n) {
+  constexpr float kInvSqrt2 = 0.7071067811865476f;
+  const __m256 half = _mm256_set1_ps(0.5f);
+  const __m256 one = _mm256_set1_ps(1.0f);
+  const __m256 scale = _mm256_set1_ps(kInvSqrt2);
+  std::size_t i = 0;
+  for (; i + 8 <= n; i += 8) {
+    const __m256 xv = _mm256_loadu_ps(x + i);
+    const __m256 cdf = _mm256_mul_ps(half, _mm256_add_ps(one, erf_ps(_mm256_mul_ps(xv, scale))));
+    _mm256_storeu_ps(y + i, _mm256_mul_ps(xv, cdf));
+  }
+  for (; i < n; ++i) y[i] = 0.5f * x[i] * (1.f + erf_approx(x[i] * kInvSqrt2));
+}
+
+void gelu_bwd(const float* x, const float* dy, float* dx, std::size_t n) {
+  constexpr float kInvSqrt2 = 0.7071067811865476f;
+  constexpr float kInvSqrt2Pi = 0.3989422804014327f;
+  const __m256 half = _mm256_set1_ps(0.5f);
+  const __m256 one = _mm256_set1_ps(1.0f);
+  const __m256 scale = _mm256_set1_ps(kInvSqrt2);
+  const __m256 pdf_scale = _mm256_set1_ps(kInvSqrt2Pi);
+  std::size_t i = 0;
+  for (; i + 8 <= n; i += 8) {
+    const __m256 xv = _mm256_loadu_ps(x + i);
+    const __m256 cdf = _mm256_mul_ps(half, _mm256_add_ps(one, erf_ps(_mm256_mul_ps(xv, scale))));
+    const __m256 pdf = _mm256_mul_ps(pdf_scale, exp256(_mm256_mul_ps(_mm256_set1_ps(-0.5f), _mm256_mul_ps(xv, xv))));
+    const __m256 local = _mm256_fmadd_ps(xv, pdf, cdf);
+    _mm256_storeu_ps(dx + i, _mm256_mul_ps(_mm256_loadu_ps(dy + i), local));
+  }
+  for (; i < n; ++i) {
+    const float cdf = 0.5f * (1.f + erf_approx(x[i] * kInvSqrt2));
+    const float pdf = kInvSqrt2Pi * std::exp(-0.5f * x[i] * x[i]);
+    dx[i] = dy[i] * (cdf + x[i] * pdf);
+  }
+}
+
+void softmax_bwd(const float* y, const float* dy, float* dx, int rows, int cols) {
+  for (int r = 0; r < rows; ++r) {
+    const float* ys = y + static_cast<std::size_t>(r) * cols;
+    const float* gs = dy + static_cast<std::size_t>(r) * cols;
+    float* os = dx + static_cast<std::size_t>(r) * cols;
+    __m256 dotv = _mm256_setzero_ps();
+    int c = 0;
+    for (; c + 8 <= cols; c += 8) {
+      dotv = _mm256_fmadd_ps(_mm256_loadu_ps(gs + c), _mm256_loadu_ps(ys + c), dotv);
+    }
+    float dot = hsum(dotv);
+    for (; c < cols; ++c) dot += gs[c] * ys[c];
+    const __m256 dot8 = _mm256_set1_ps(dot);
+    c = 0;
+    for (; c + 8 <= cols; c += 8) {
+      const __m256 yv = _mm256_loadu_ps(ys + c);
+      const __m256 gv = _mm256_loadu_ps(gs + c);
+      _mm256_storeu_ps(os + c, _mm256_mul_ps(yv, _mm256_sub_ps(gv, dot8)));
+    }
+    for (; c < cols; ++c) os[c] = ys[c] * (gs[c] - dot);
+  }
+}
+
+void log_softmax(const float* x, float* y, int rows, int cols) {
+  detail::log_softmax(x, y, rows, cols);
+}
+
+void log_softmax_bwd(const float* y, const float* dy, float* dx, int rows, int cols) {
+  for (int r = 0; r < rows; ++r) {
+    const float* ys = y + static_cast<std::size_t>(r) * cols;
+    const float* gs = dy + static_cast<std::size_t>(r) * cols;
+    float* os = dx + static_cast<std::size_t>(r) * cols;
+    __m256 sumv = _mm256_setzero_ps();
+    int c = 0;
+    for (; c + 8 <= cols; c += 8) sumv = _mm256_add_ps(sumv, _mm256_loadu_ps(gs + c));
+    float sum = hsum(sumv);
+    for (; c < cols; ++c) sum += gs[c];
+    const __m256 sum8 = _mm256_set1_ps(sum);
+    c = 0;
+    for (; c + 8 <= cols; c += 8) {
+      float lane[8];
+      _mm256_storeu_ps(lane, _mm256_loadu_ps(ys + c));
+      float out[8];
+      _mm256_storeu_ps(out, _mm256_loadu_ps(gs + c));
+      for (int lane_index = 0; lane_index < 8; ++lane_index) out[lane_index] -= std::exp(lane[lane_index]) * sum;
+      _mm256_storeu_ps(os + c, _mm256_loadu_ps(out));
+      (void)sum8;
+    }
+    for (; c < cols; ++c) os[c] = gs[c] - std::exp(ys[c]) * sum;
+  }
+}
+
 }  // namespace nexus_model::kernels::avx2
+
+namespace nexus_model::kernels {
+
+float contiguous_sum(const float* data, int n) {
+    __m256 acc = _mm256_setzero_ps();
+    int i = 0;
+    for (; i + 8 <= n; i += 8) {
+        acc = _mm256_add_ps(acc, _mm256_loadu_ps(data + i));
+    }
+    __m128 lo = _mm256_castps256_ps128(acc);
+    __m128 hi = _mm256_extractf128_ps(acc, 1);
+    lo = _mm_add_ps(lo, hi);
+    lo = _mm_hadd_ps(lo, lo);
+    lo = _mm_hadd_ps(lo, lo);
+    float sum = _mm_cvtss_f32(lo);
+    for (; i < n; ++i) {
+        sum += data[i];
+    }
+    return sum;
+}
+
+void contiguous_affine(const float* x, float* y, int n, float mean, float scale, float shift) {
+    const __m256 mean_v = _mm256_set1_ps(mean);
+    const __m256 scale_v = _mm256_set1_ps(scale);
+    const __m256 shift_v = _mm256_set1_ps(shift);
+    int i = 0;
+    for (; i + 8 <= n; i += 8) {
+        const __m256 value = _mm256_loadu_ps(x + i);
+        _mm256_storeu_ps(y + i, _mm256_fmadd_ps(_mm256_sub_ps(value, mean_v), scale_v, shift_v));
+    }
+    for (; i < n; ++i) {
+        y[i] = (x[i] - mean) * scale + shift;
+    }
+}
+
+bool pool_aligned(const float* x, float* y, int* index, int n, int c, int h, int w, int kernel, bool is_max) {
+    if (kernel != 2 && kernel != 3) {
+        return false;
+    }
+    if (h % kernel != 0 || w % kernel != 0) {
+        return false;
+    }
+    const int oh = h / kernel;
+    const int ow = w / kernel;
+    const float inv = 1.0f / static_cast<float>(kernel * kernel);
+    for (int ni = 0; ni < n; ++ni) {
+        for (int ci = 0; ci < c; ++ci) {
+            const float* src = x + (static_cast<std::size_t>(ni * c + ci) * h) * w;
+            float* dst = y + (static_cast<std::size_t>(ni * c + ci) * oh) * ow;
+            int* idx = index != nullptr ? index + (static_cast<std::size_t>(ni * c + ci) * oh) * ow : nullptr;
+            for (int oy = 0; oy < oh; ++oy) {
+                for (int ox = 0; ox < ow; ++ox) {
+                    if (is_max) {
+                        float best = src[(oy * kernel) * w + ox * kernel];
+                        int best_i = (oy * kernel) * w + ox * kernel;
+                        for (int ky = 0; ky < kernel; ++ky) {
+                            const int iy = oy * kernel + ky;
+                            for (int kx = 0; kx < kernel; ++kx) {
+                                const int flat = iy * w + ox * kernel + kx;
+                                if (src[flat] > best) {
+                                    best = src[flat];
+                                    best_i = flat;
+                                }
+                            }
+                        }
+                        dst[oy * ow + ox] = best;
+                        if (idx != nullptr) {
+                            idx[oy * ow + ox] = best_i;
+                        }
+                    } else {
+                        __m256 acc = _mm256_setzero_ps();
+                        int count = 0;
+                        float sum = 0.0f;
+                        for (int ky = 0; ky < kernel; ++ky) {
+                            const float* row = src + (oy * kernel + ky) * w + ox * kernel;
+                            int kx = 0;
+                            for (; kx + 8 <= kernel; kx += 8) {
+                                acc = _mm256_add_ps(acc, _mm256_loadu_ps(row + kx));
+                                count += 8;
+                            }
+                            for (; kx < kernel; ++kx) {
+                                sum += row[kx];
+                            }
+                        }
+                        if (count > 0) {
+                            __m128 lo = _mm256_castps256_ps128(acc);
+                            __m128 hi = _mm256_extractf128_ps(acc, 1);
+                            lo = _mm_add_ps(lo, hi);
+                            lo = _mm_hadd_ps(lo, lo);
+                            lo = _mm_hadd_ps(lo, lo);
+                            sum += _mm_cvtss_f32(lo);
+                        }
+                        dst[oy * ow + ox] = sum * inv;
+                    }
+                }
+            }
+        }
+    }
+    return true;
+}
+
+void fill_dropout_mask(float* mask, std::size_t n, float p, std::uint64_t seed) {
+    alignas(32) std::uint64_t state[4] = {seed ? seed : 0x9E3779B97F4A7C15ull, seed ^ 0xD1B54A32D192ED03ull,
+                                          seed ^ 0x94D049BB133111EBull, seed ^ 0xBF58476D1CE4E5B9ull};
+    std::size_t i = 0;
+    for (; i + 4 <= n; i += 4) {
+        for (int lane = 0; lane < 4; ++lane) {
+            state[lane] ^= state[lane] << 13;
+            state[lane] ^= state[lane] >> 7;
+            state[lane] ^= state[lane] << 17;
+            const float u = static_cast<float>(state[lane] >> 40) * (1.f / 16777216.f);
+            mask[i + static_cast<std::size_t>(lane)] = u >= p ? 1.f : 0.f;
+        }
+    }
+    std::uint64_t tail = state[0];
+    for (; i < n; ++i) {
+        tail ^= tail << 13;
+        tail ^= tail >> 7;
+        tail ^= tail << 17;
+        const float u = static_cast<float>(tail >> 40) * (1.f / 16777216.f);
+        mask[i] = u >= p ? 1.f : 0.f;
+    }
+}
+
+}  // namespace nexus_model::kernels

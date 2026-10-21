@@ -23,8 +23,8 @@ export function LibraryComparison({ lang }: { lang: Locale }) {
           </h2>
           <p>
             {t(
-              "Aynı girdiler. Aynı işlem. Doğrulanmış çıktılar.",
-              "Same inputs. Same operation. Verified outputs.",
+              "29 Eylül 2026, tek iş parçacığı, küçük GEMM ve ReLU. Doğrulanmış çıktılar. 21 Ekim akşamı ayrıdır: N=2048 GEMM avx2-4x16, Nexus 330/362/369 GFLOPS, TensorFlow 389. Conv2d PyTorch 31.6 GFLOPS gerisindeydi.",
+              "29 September 2026, one thread, small GEMM and ReLU. Verified outputs. The 21 October evening is separate: N=2048 GEMM avx2-4x16, Nexus 330/362/369 GFLOPS, TensorFlow 389. Conv2d was behind PyTorch at 31.6 GFLOPS.",
             )}
           </p>
         </div>

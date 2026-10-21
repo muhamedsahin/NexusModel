@@ -15,14 +15,7 @@ void dropout_mask(float* mask, std::size_t n, float p, std::uint64_t seed) {
     std::fill(mask, mask + n, 0.f);
     return;
   }
-  std::uint64_t state = seed ? seed : 0x9E3779B97F4A7C15ull;
-  for (std::size_t i = 0; i < n; ++i) {
-    state ^= state << 13;
-    state ^= state >> 7;
-    state ^= state << 17;
-    const float u = static_cast<float>(state >> 40) * (1.f / 16777216.f);
-    mask[i] = u >= p ? 1.f : 0.f;
-  }
+  fill_dropout_mask(mask, n, p, seed);
 }
 
 

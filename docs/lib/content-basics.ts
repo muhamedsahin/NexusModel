@@ -40,8 +40,8 @@ export const basics: Article[] = [
         "boundaries",
         "Mevcut kapsam",
         "Current scope",
-        "Hesap ve depolama float32, varsayılan yürütme host CPU üzerindedir. Global autograd, otomatik cihaz taşıma, FP16/BF16 eğitim, optimizer veya veri yükleyici bu çekirdeğin özellikleri değildir. Modüller değişebilir çalışma tamponları taşır; eşzamanlı kullanım ayrı replikalar gerektirir.",
-        "Computation and storage use float32, with host CPU execution by default. Global autograd, automatic device transfer, FP16/BF16 training, optimizers, and data loaders are outside this core. Modules own mutable buffers; concurrency requires separate replicas.",
+        "Hesap ve depolama float32, varsayılan yürütme host CPU üzerindedir. Global autograd, otomatik cihaz taşıma, FP16/BF16 eğitim, optimizer veya veri yükleyici bu çekirdeğin özellikleri değildir. Modüller değişebilir çalışma tamponları taşır; eşzamanlı kullanım ayrı replikalar gerektirir. 21 Ekim 2026 akşamı bu Ryzen 7 5800H üzerinde AVX-512 seçilmedi. Rakip protokolünde GEMM çekirdeği avx2-4x16 kaldı: N=2048 Nexus 330, 362 ve 369 GFLOPS, TensorFlow 389. CPU Conv2d PyTorch 31.6 GFLOPS gerisindeydi; Nexus yaklaşık 4.9 ile 6.8 GFLOPS arasındaydı. Depthwise AVX, o sütunda PyTorch 4.93 ve TensorFlow 0.688 önündeydi. Dünya sıralaması yoktur.",
+        "Computation and storage use float32, with host CPU execution by default. Global autograd, automatic device transfer, FP16/BF16 training, optimizers, and data loaders are outside this core. Modules own mutable buffers; concurrency requires separate replicas. On the evening of 2026-10-21, AVX-512 was not selected on this Ryzen 7 5800H. The competitor-protocol GEMM kept kernel avx2-4x16: N=2048 Nexus 330, 362, and 369 GFLOPS, TensorFlow 389. CPU Conv2d was behind PyTorch at 31.6 GFLOPS; Nexus was about 4.9 to 6.8 GFLOPS. Depthwise AVX was ahead of PyTorch 4.93 and TensorFlow 0.688 on that column. There is no world ranking.",
       ),
     ],
   },
@@ -76,8 +76,8 @@ export const basics: Article[] = [
         "options",
         "Derleme seçenekleri",
         "Build options",
-        "CUDA mimarisi varsayılan 86; kendi GPU mimarinizi seçin. MatrixFlash seçeneği köprü başlığını açar; tüketen hedef ayrıca MatrixFlash bağımlılığını karşılamalıdır.",
-        "CUDA architecture defaults to 86; select your GPU architecture. The MatrixFlash option enables the bridge header; the consumer must separately supply MatrixFlash dependencies.",
+        "CUDA mimarisi varsayılan 86; kendi GPU mimarinizi seçin. MatrixFlash seçeneği köprü başlığını açar; tüketen hedef ayrıca MatrixFlash bağımlılığını karşılamalıdır. NEXUS_MODEL_ENABLE_AVX512 varsayılanı ON’dur ve çekirdekleri derler. Ryzen 7 5800H üzerinde AVX-512 seçilmez.",
+        "CUDA architecture defaults to 86; select your GPU architecture. The MatrixFlash option enables the bridge header; the consumer must separately supply MatrixFlash dependencies. NEXUS_MODEL_ENABLE_AVX512 defaults to ON and compiles the kernels. AVX-512 is not selected on the Ryzen 7 5800H.",
         {
           table: {
             headers: [tx("Seçenek", "Option"), tx("Varsayılan", "Default")],
