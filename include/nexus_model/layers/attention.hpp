@@ -92,7 +92,6 @@ class MultiHeadAttention : public Module {
     int scores = tape_.matmul_bt(iq_, ik_);
     scores = tape_.scale(scores, 1.f / std::sqrt(static_cast<float>(dim_)));
     if (causal_) {
-      if (tq_ != tk_) throw ModelError("causal attention requires equal query and key lengths");
       build_causal();
       scores = tape_.add_matrix(scores, causal_mask_);
     }
@@ -141,12 +140,16 @@ class MultiHeadAttention : public Module {
   const Tensor& grad_value_input() const { return dv_in_; }
 
  private:
+  // Tq != Tk: sorgular anahtarlarin SONUNA hizalanir (Nexus FAZ 5 / FlashAttention-2 sozlesmesi):
+  // q_pos = tk - tq + i, j > q_pos maskeli. Tq = 1 + KV onbellegi bu kuraldir.
   void build_causal() {
-    if (causal_t_ == tq_ && causal_mask_.numel() == static_cast<std::size_t>(tq_ * tq_)) return;
+    if (causal_t_ == tq_ && causal_tk_ == tk_) return;
     causal_t_ = tq_;
-    causal_mask_.resize({static_cast<std::size_t>(tq_), static_cast<std::size_t>(tq_)});
+    causal_tk_ = tk_;
+    causal_mask_.resize({static_cast<std::size_t>(tq_), static_cast<std::size_t>(tk_)});
     for (int i = 0; i < tq_; ++i) {
-      for (int j = 0; j < tq_; ++j) causal_mask_[static_cast<std::size_t>(i) * tq_ + j] = j > i ? -1.0e9f : 0.f;
+      const int q_pos = tk_ - tq_ + i;
+      for (int j = 0; j < tk_; ++j) causal_mask_[static_cast<std::size_t>(i) * tk_ + j] = j > q_pos ? -1.0e9f : 0.f;
     }
   }
 
@@ -163,7 +166,7 @@ class MultiHeadAttention : public Module {
   float dropout_p_;
   bool causal_;
   bool self_ = true;
-  int batch_ = 0, tq_ = 0, tk_ = 0, causal_t_ = -1;
+  int batch_ = 0, tq_ = 0, tk_ = 0, causal_t_ = -1, causal_tk_ = -1;
   int iq_ = 0, ik_ = 0, iv_ = 0, ctx_ = 0;
   std::uint64_t seed_ = 0xA77EU;
   std::shared_ptr<Linear> q_, k_, v_, o_;

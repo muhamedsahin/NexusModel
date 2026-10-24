@@ -353,6 +353,30 @@ void test_attention() {
   auto y = pe.forward(x);
   CHECK(y.numel() == x.numel());
   CHECK(std::fabs(y[0] - x[0]) > 0.f || std::fabs(y[1] - x[1]) > 0.f);
+
+  // Causal Tq != Tk: son 2 sorgu, 5 anahtarin sonuna hizali -> causal oz-dikkatin son 2 satiri.
+  nexus_model::MultiHeadAttention causal(8, 2, 0.f, true);
+  shrink(causal, 0.1f);
+  auto full = nexus_model::Tensor::zeros({2, 5, 8});
+  fill_pattern(full, 0.07f);
+  const auto self_out = causal.forward(full).clone();
+  auto tail = nexus_model::Tensor::zeros({2, 2, 8});
+  for (int b = 0; b < 2; ++b) {
+    for (int t = 0; t < 2; ++t) {
+      for (int e = 0; e < 8; ++e) tail[(b * 2 + t) * 8 + e] = full[(b * 5 + 3 + t) * 8 + e];
+    }
+  }
+  const auto kv = full.clone();
+  const auto cross_out = causal.forward(tail, kv, kv, nullptr);
+  float worst = 0.f;
+  for (int b = 0; b < 2; ++b) {
+    for (int t = 0; t < 2; ++t) {
+      for (int e = 0; e < 8; ++e) {
+        worst = std::max(worst, std::fabs(cross_out[(b * 2 + t) * 8 + e] - self_out[(b * 5 + 3 + t) * 8 + e]));
+      }
+    }
+  }
+  CHECK(worst < 1e-6f);
 }
 
 void test_containers_and_state() {
