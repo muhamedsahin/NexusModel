@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <immintrin.h>
 
 namespace nexus_model::kernels::avx2 {
